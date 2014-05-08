@@ -1,6 +1,6 @@
 module MCollective
     module Agent
-        class Curb<RPC::Agent
+        class Deploop<RPC::Agent
 
             action "download" do
                 validate :url, String
