@@ -28,4 +28,8 @@
 
 # Get a catalog from the node.
 HOST=openbus-rm.openstacklocal
-curl -w "\n" --insecure -H 'Accept: pson' https://puppet:8140/production/catalog/${HOST}
+curl -w "\n" -k -H 'Accept: pson' https://puppet:8140/production/catalog/${HOST}
+
+# The same as: "sudo puppet cert --list --all"
+curl -w "\n" -k -H "Accept: pson" https://puppet:8140/production/certificate_statuses/all
+

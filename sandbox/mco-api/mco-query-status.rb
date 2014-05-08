@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# vim: autoindent tabstop=2 shiftwidth=2 expandtab softtabstop=2 filetype=ruby
 # This example is the same as mco cli command:
 # mco service status atd --with-identity openbus-nn1
  
