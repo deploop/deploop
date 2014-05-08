@@ -6,7 +6,9 @@ require "mcollective"
   
 include MCollective::RPC
    
-c = rpcclient("service")
-c.identity_filter "openbus-nn1"
+mc = rpcclient "service"
+mc.progress = false
+
+mc.identity_filter "openbus-nn1"
     
-printrpc c.status(:service => "atd")
+printrpc mc.status :service => "atd"

@@ -10,6 +10,8 @@ https://github.com/ajf8/mcomaster - Ruby on Rails MCollective GUI
 
 https://github.com/kermitfr/kermit-webui - DJango Puppet adn MCollective GUI
 
+https://github.com/sodabrew/puppet-dashboard
+
 Pull request flow
 ------------------
 
