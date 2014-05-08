@@ -1,0 +1,18 @@
+Facts scheme:
+
+		Deploop
+		   |
+ collection0--collection1--collection2 	: Pre, Pro, Dev, Test
+		   |
+    category0--category1--category2	: RT, Batch, Other
+		   |
+	    role0--role1--role3		: DataNode, KDC, NameNode
+	           |
+	entity0-entity1-entity2		: Flume, Monit, kafka, Storm
+
+Example:
+
+deploop_collection => preproduction | production | test | development
+deploop_category => realtime | batch | other
+deploop_role => datanode | namenode | kdc | resourcemananger
+deploop_entity => flume | kafka | storm-nimbus | monit
