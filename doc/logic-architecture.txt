@@ -1,0 +1,65 @@
+Deploop system architecture logic
+=================================
+
+This steps describe the events raised when a new machine is
+connected to the Hadoop server pool.
+
+1 - Baremetal software requirements (new node in the server pool)
+
+The baremental must have been deployed with this minimal software
+components (for example by means of Cobbler and Kickstart):
+
+mcollective 
+mcollective-service-agent
+mcollective-puppet-agent
+mcollective-deploop-agent
+puppet 
+
+The mcollective server must be running, and the puppet agent disabled. And
+/etc/mcollective/server.cfg and /etc/puppet/puppet.conf properly set up: The
+Puppet Master and the ActiveMQ MON server are in the Deploop Server machine.
+
+2 - The Deploop server has ActiveMQ ready for mcollective server subscribers.
+
+3 - The new baremental machine boot up and the mcollective server self-register
+in the ActiveMQ MOM.
+
+4 - The user check for new machines usign the Deploop GUI. The Deploop looks for
+mcollective server without "Deploop Facts" configurated. The brand new machine
+has not installed "Deploop Facts", so this machine in not registered in the Deploop
+server system, is a new system in the server pool.
+
+5 - The user assing a role to the new machine using the Deploop GUI, this user
+action raises the following events chain.
+
+6 - Deploop server deploy the "Deploop Facts" according with the user role election
+to the new server. This made by means of MCollective SimpleRPC Framework invoking the
+already installed mcollective-deploop-agent:
+
+This mcollective server agent does the following tasks:
+    
+    - download the ruby files with the "Deploop Facts" from an HTTP URL given.
+    - update the YAML facts data base (facter -y -p > /etc/mcollective/facts.yaml)
+    - Reload the new facts for the mcollective agent server.
+    
+7 - The Deploop server raises a "puppet run" in the new machine using the 
+mcollective-puppet-agent. This new machine must get a signed certificate from
+the Puppet Master before the "puppet run", this is made by means of Puupet 
+RESTfull API.
+
+8 - The puppet agent of the new machine ask for your custom puppet catalog. This
+catalog selection by the Puppet Master is based in the "Deploop Facts" implemented
+in the site.pp main file.
+
+
+Techologies involved in Deploop
+===============================
+
+Graphical User Interface usign Ruby on Rails Framework.
+MCollective system control using MCollective SimpleRPC Framework.
+Puppet system control using Puppet RESTFull API Framework.
+Deploop backend on top of MySQL engine.
+
+
+
+
