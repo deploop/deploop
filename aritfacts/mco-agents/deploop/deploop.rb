@@ -23,3 +23,5 @@ module MCollective
         end
     end
 end
+
+# vim: autoindent tabstop=2 shiftwidth=2 expandtab softtabstop=2 filetype=ruby

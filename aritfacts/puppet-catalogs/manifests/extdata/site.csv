@@ -1,0 +1,25 @@
+# External Data lookup CSV file used for customize the
+# cluster. manifests/init.pp expects configuration 
+# to live in this CSV.
+
+# Buildoop yum repository, or Spacewalk channel
+buildoop_yumrepo_uri,http://buildooprepo:8080/
+
+# For use OpenJDK or Sun JDK
+jdk_package_name,jdk
+
+# NameNode list, for HDFS HA and Federation
+hadoop_datanodes,mncarsnas.condor.local,mncars001.condor.local
+
+# ResourceManager server
+hadoop_resourcemanager,mncars002.condor.local
+
+# Hadoop client server
+hadoop_client,none
+
+# Hadoop Gateway server
+hadoop_gateway,none
+
+# MapReduce HistoryServer
+hadoop_historyserver,node
+
