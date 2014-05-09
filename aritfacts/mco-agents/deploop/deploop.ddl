@@ -1,12 +1,12 @@
-metadata :name        => "curl - transfer a URL",
-         :description => "Tool to transfer data from or to a server, using URLs",
-         :author      => "Javi Roman based on Louis Coilliot code",
-         :license     => "",
-         :version     => "0.1",
-         :url         => "",
+metadata :name        => "Deploop Facter Deployer",
+         :description => "Key tool for deploy Deploop Facters in new servers",
+         :author      => "Javi Roman <javiroman@redoop.org",
+         :license     => "APL-2.0",
+         :version     => "0.0.1",
+         :url         => "https://github.com/deploop",
          :timeout     => 10
 
-action "download", :description => "Download URL" do
+action "download_fact", :description => "Download Deploop Facter from URL" do
     display :always
 
     input :url,
