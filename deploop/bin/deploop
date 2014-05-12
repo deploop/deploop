@@ -22,6 +22,15 @@ require 'optparse/time'
 require 'ostruct'
 require 'pp'
 
+class DeploopCli
+
+  def initialize(argv)
+    options = OptparseExample.parse(argv)
+    pp options
+    pp argv 
+  end
+end
+
 class OptparseExample
 
   CODES = %w[iso-2022-jp shift_jis euc-jp utf8 binary]
@@ -106,7 +115,6 @@ class OptparseExample
       opts.separator "Common options:"
 
       # No argument, shows at tail.  This will print an options summary.
-      # Try it and see!
       opts.on_tail("-h", "--help", "Show this message") do
         puts opts
         exit
@@ -126,10 +134,6 @@ class OptparseExample
 end  # class OptparseExample
 
 if __FILE__ == $PROGRAM_NAME
-  options = OptparseExample.parse(ARGV)
-  pp options
-  pp ARGV
-  #x = SweetClass.new(ARGV)
-  #x.run 
+  x = DeploopCli.new(ARGV)
 end
 
