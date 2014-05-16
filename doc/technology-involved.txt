@@ -1,0 +1,12 @@
+Front end:
+
+Ruby on Rails
+JQuery
+Bootstrap
+JsTree
+
+Back end:
+
+Puppet
+MCollective
+
