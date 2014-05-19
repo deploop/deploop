@@ -7,6 +7,15 @@
 #DEPLOOP_FACT="deploop_collection.rb"
 DEPLOOP_FACT="deploop_entity.rb"
 
+# mco rpc deploop puppet_environment env=production
+# mco rpc deploop puppet_environment env=preproduction
+# mco rpc deploop puppet_environment env=test
+
+# This match with the Puppet environment configuration
+# /etc/puppet/environments/production
+#                          preproduction
+#                          test
+
 mco rpc deploop download_fact url="http://openbus-deploop:8080/$DEPLOOP_FACT"
 
 # The file must be go to /var/lib/puppet/lib/facter/ and update with 

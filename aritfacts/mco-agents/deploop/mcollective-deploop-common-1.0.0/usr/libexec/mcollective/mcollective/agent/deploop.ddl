@@ -26,3 +26,21 @@ action "download_fact", :description => "Download Deploop Facter from URL" do
           :display_as  => "Content-length"
 end
 
+action "puppet_environment", :description => "Set Puppuet Agent environment" do
+    display :always
+
+    input :env,
+          :prompt      => "ENVIRONMENT",
+          :description => "The environment to set in the Puppet Agent",
+          :type        => :string,
+          :validation  => '^[a-zA-Z\-_\d\.:\/]+$',
+          :optional    => false,
+          :maxlength   => 50 
+
+    output "response_code",
+          :description => "puppet.conf write return code",
+          :display_as  => "Response code"
+end
+
+
+

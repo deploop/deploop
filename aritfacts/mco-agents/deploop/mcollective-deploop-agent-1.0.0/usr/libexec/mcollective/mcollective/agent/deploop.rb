@@ -44,6 +44,21 @@ module MCollective
         reply['response_code'] = c.response_code 
         reply['downloaded_content_length'] = c.downloaded_content_length 
       end
+
+      action 'puppet_environment' do
+        validate :env, String
+
+        env = request[:env]
+        env = "environment=#{env}"
+        factpath='factpath=/var/lib/puppet/facts.d/'
+
+        File.open("/etc/puppet/puppet.conf","a+") {|f| 
+          f.puts(factpath) 
+          f.puts(env)
+        }
+
+        reply['response_code'] = 0
+      end
     end
   end
 end
