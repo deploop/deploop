@@ -7,7 +7,7 @@
 #DEPLOOP_FACT="deploop_collection.rb"
 DEPLOOP_FACT="deploop_entity.rb"
 
-# mco rpc deploop puppet_environment env=production
+# mco rpc deploop puppet_environment env=production --with-identity=mncars001
 # mco rpc deploop puppet_environment env=preproduction
 # mco rpc deploop puppet_environment env=test
 
