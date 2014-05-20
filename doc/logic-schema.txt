@@ -12,7 +12,23 @@ Facts scheme:
 
 Example:
 
-deploop_collection => preproduction | production | test | development
-deploop_category => realtime | batch | other
-deploop_role => datanode | namenode | kdc | resourcemananger
-deploop_entity => flume | kafka | storm-nimbus | monit
+Available Deploop Facts and values:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- deploop_collection
+
+[preproduction | production | test]
+
+Those values have to match with the Puppet enviroment defined.
+
+- deploop_category 
+
+[realtime | batch | bus]
+
+- deploop_role 
+
+nn1 | nn2 | rm 
+
+- deploop_entity 
+
+[flume | kafka | storm-nimbus | monit]
