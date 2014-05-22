@@ -22,3 +22,16 @@
 │       ├── spark 
 │       └── storm
 └── test
+
+Architecture decisions
+~~~~~~~~~~~~~~~~~~~~~~
+
+Puupet in Deploop architecture is only responsible for:
+
+1. Configuration deployments.
+2. Ecosystem package installation.
+
+The responsible for daemons startup and HDFS formats is MCollective.
+
+This architecture simplify the Puppet catalog logic and minimise the
+probabily of error in the puppet runs.
