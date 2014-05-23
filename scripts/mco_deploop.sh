@@ -36,3 +36,10 @@ mco rpc deploop download_fact url="http://openbus-deploop:8080/$DEPLOOP_FACT"
 
 mco ping --with-fact "${DEPLOOP_FACT%.rb}=/.*/"
 mco inventory openbus-nn1 | grep deploop | grep =
+
+
+# Puppet runs
+# mco rpc puppet runonce --with-identity mncars001
+
+
+

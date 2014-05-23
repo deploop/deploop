@@ -15,20 +15,20 @@ Example:
 Available Deploop Facts and values:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- deploop_collection
+- deploop_collection: A host only belongs to a collection.
 
 [preproduction | production | test]
 
 Those values have to match with the Puppet enviroment defined.
 
-- deploop_category 
+- deploop_category: A host only belongs to a category.
 
 [realtime | batch | bus]
 
-- deploop_role 
+- deploop_role: A host can belogns to many roles. 
 
 nn1 | nn2 | rm 
 
-- deploop_entity 
+- deploop_entity: A host cat install many entities.
 
 [flume | kafka | storm-nimbus | monit]
