@@ -87,3 +87,10 @@ manager> mco rpc deploop execute cmd='cat /etc/puppet/puppet.conf | grep environ
 manager> mco rpc deploop execute cmd='ls -l' --with-identity=mncars001
 manager> mco rpc deploop execute cmd='uname -a' --with-identity=mncars001
 
+###################################################################
+# Some usefull commnads
+###################################################################
+manager> mco rpc service start service=atd --with-identity mncars001
+manager> mco rpc service stop service=atd --with-identity mncars001
+manager> mco rpc service status service=atd --with-identity mncars001
+
