@@ -34,27 +34,28 @@ agent> puppet agent --configprint environment
 ###################################################################
 # 3. The next one is to deploy de facts for fine tune logic control in puppet master.
 #
-# In order to makes work this step, we have to run a simple webserver
-# pointing to the deploop facts folder
-###################################################################
-
-manager> setsid ruby ./simple-webserver.rb
-
 # deploop_collection.rb -> production
+#
+#   Facter.add(:deploop_collection) do
+#      setcode "echo production"
+#   end
+#
 # deploop_category.rb -> batch
 # deploop_role.rb -> nn1
 # deploop_entity.rb -> flume
+###################################################################
 
 #
-# mco rpc <deploop agent> <action> url=<enviroment> 
+# mco rpc <deploop agent> <action> fact=<fact name> value=<fact values>
 # 
-# This command download the deploop fact into the agent folder /var/lib/puppet/facts.d
+# This command create the deploop fact into the agent folder /var/lib/puppet/facts.d
 # and update the facters file: /etc/mcollective/facts.yaml
 #
-manager> mco rpc deploop download_fact url="http://openbus-deploop:8080/deploop_collection.rb" --with-identity=mncars001
-manager> mco rpc deploop download_fact url="http://openbus-deploop:8080/deploop_category.rb" --with-identity=mncars001
-manager> mco rpc deploop download_fact url="http://openbus-deploop:8080/deploop_role.rb" --with-identity=mncars001
-manager> mco rpc deploop download_fact url="http://openbus-deploop:8080/deploop_entity.rb" --with-identity=mncars001
+
+manager> mco rpc deploop create_fact fact='collection' value='production' --with-identity=mncars001
+manager> mco rpc deploop create_fact fact='category' value='batch' --with-identity=mncars001
+manager> mco rpc deploop create_fact fact='role' value='nn1' --with-identity=mncars001
+manager> mco rpc deploop create_fact fact='entity' value='flume kafka whatever' --with-identity=mncars001
 
 ###################################################################
 # 4. Getting information

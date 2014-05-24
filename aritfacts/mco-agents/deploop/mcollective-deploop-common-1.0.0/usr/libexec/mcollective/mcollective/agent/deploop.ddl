@@ -6,24 +6,28 @@ metadata :name        => "Deploop Facter Deployer",
          :url         => "https://github.com/deploop",
          :timeout     => 10
 
-action "download_fact", :description => "Download Deploop Facter from URL" do
+action "create_fact", :description => "Create Deploop Facter in Agent" do
     display :always
 
-    input :url,
-          :prompt      => "URL",
-          :description => "The URL to download",
+    input :fact,
+          :prompt      => "FACT",
+          :description => "The FACT name to create",
           :type        => :string,
           :validation  => '^[a-zA-Z\-_\d\.:\/]+$',
           :optional    => false,
           :maxlength   => 100
 
-   output "response_code",
-          :description => "last received HTTP or FTP code",
-          :display_as  => "Response code"
+    input :value,
+          :prompt      => "VALUE",
+          :description => "The VALUE to insert in the FACT",
+          :type        => :string,
+          :validation  => '^[a-zA-Z\-_\d\s\.:\/]+$',
+          :optional    => false,
+          :maxlength   => 100
 
-   output "downloaded_content_length",
-          :description => "Content-length of the download.",
-          :display_as  => "Content-length"
+   output "response_code",
+          :description => "The creation file success",
+          :display_as  => "Response code"
 end
 
 action "puppet_environment", :description => "Set Puppuet Agent environment" do

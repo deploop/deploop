@@ -3,27 +3,33 @@ module MCollective
   module Agent
     class Deploop<RPC::Agent
 
-      action 'download_fact' do
-        validate :url, String
+      action 'create_fact' do
+        validate :fact, String
+        validate :value, String
 
-        url = request[:url]
-        Log.info("url passed: %s" % url)
+        fact = request[:fact]
+        value = request[:value]
+        Log.info("fact passed: %s" % fact)
+        Log.info("with values: %s" % value)
 
-        require 'rubygems'
-        require 'curb'
 	      require 'facter'
     	  require 'yaml'
 
         facterpath='/var/lib/puppet/facts.d'
 
-        filename=url.split('/').last
+        filename="deploop_#{fact}.rb"
         fileout = "#{facterpath}/#{filename}"
+
+        File.open(fileout,"w+") {|f|
+          f.puts "Facter.add(:deploop_#{fact}) do"
+          f.puts "\tsetcode \"echo #{value}\""
+          f.puts 'end'
+          f.close
+        }
+
         Log.info("deploop facter location: %s" % fileout)
 
-        c = Curl::Easy.download(url, filename=fileout)
-
         config = MCollective::Config.instance
-
 	      yamlfile = config.pluginconf["yaml"]
         Log.info("YAML file to update: %s" % yamlfile)
 
@@ -41,8 +47,7 @@ module MCollective
 	        fh.close
         }
 
-        reply['response_code'] = c.response_code 
-        reply['downloaded_content_length'] = c.downloaded_content_length 
+        reply['response_code'] = 0
       end
 
       action 'puppet_environment' do
