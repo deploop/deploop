@@ -80,5 +80,10 @@ manager> mco rpc puppet runonce --with-identity mncars001
 manager> mco rpc puppet runonce --batch 2 --batch-sleep 10
 manager> mco rpc puppet status --with-identity=mncars001
 
-
+###################################################################
+# 6. Command execution
+###################################################################
+manager> mco rpc deploop execute cmd='cat /etc/puppet/puppet.conf | grep environment' --with-identity=mncars001
+manager> mco rpc deploop execute cmd='ls -l' --with-identity=mncars001
+manager> mco rpc deploop execute cmd='uname -a' --with-identity=mncars001
 

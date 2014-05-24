@@ -46,5 +46,31 @@ action "puppet_environment", :description => "Set Puppuet Agent environment" do
           :display_as  => "Response code"
 end
 
+["execute"].each do |act|
+  action act, :description => "#{act.capitalize} a command" do
+    display :always
+
+    input :cmd,
+          :prompt      => "Command",
+          :description => "The name of the command to #{act}",
+          :type        => :string,
+          :validation  => '^.+$',
+          :optional    => false,
+          :maxlength   => 300
+
+    output :output,
+           :description => "Command Output",
+           :display_as  => "Output"
+
+    output :error,
+           :description => "Command Error",
+           :display_as  => "Error"
+
+    output :exitcode,
+           :description => "Exit code of the shell process",
+           :display_as  => "Exit Code"
+  end
+end
+
 
 

@@ -56,15 +56,31 @@ module MCollective
         env = request[:env]
         env = "environment=#{env}"
         factpath='factpath=/var/lib/puppet/facts.d/'
-        disableplugin='pluginsync=false'
 
         File.open("/etc/puppet/puppet.conf","a+") {|f| 
-          f.puts(disableplugin) 
           f.puts(factpath) 
           f.puts(env)
         }
 
         reply['response_code'] = 0
+      end
+
+      action "execute" do
+        validate :cmd, String
+
+        out = []
+        err = ""
+
+        begin
+          status = run("#{request[:cmd]}", :stdout => out, :stderr => err, :chomp => true)
+        rescue Exception => e
+          reply.fail e.to_s
+        end
+
+        reply[:exitcode] = status
+        reply[:stdout] = out.join(" ")
+        reply[:stderr] = err
+        reply.fail err if status != 0
       end
     end
   end
