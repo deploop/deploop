@@ -94,3 +94,20 @@ manager> mco rpc service start service=atd --with-identity mncars001
 manager> mco rpc service stop service=atd --with-identity mncars001
 manager> mco rpc service status service=atd --with-identity mncars001
 
+
+###################################################################
+# 6. Coomand guide for Hadoop setup
+###################################################################
+[ This command need comment out -> /etc/sudores: Defaults    requiretty]
+manager> mco rpc deploop execute cmd='sudo -E /etc/init.d/zookeeper-server start' --with-identity=mncars001
+manager> mco rpc service start service=zookeeper-server --with-identity mncars001
+
+
+
+
+
+
+
+
+
+
