@@ -100,13 +100,72 @@ manager> mco rpc service status service=atd --with-identity mncars001
 ###################################################################
 [ This command need comment out -> /etc/sudores: Defaults    requiretty]
 manager> mco rpc deploop execute cmd='sudo -E /etc/init.d/zookeeper-server start' --with-identity=mncars001
+
+# Zookeeper Esemble startup
 manager> mco rpc service start service=zookeeper-server --with-identity mncars001
+manager> mco rpc service start service=zookeeper-server --with-identity mncars002
+manager> mco rpc service start service=zookeeper-server --with-identity mncars003
+
+# Zookeeper znode for Automatic Failover
+manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hdfs zkfc -formatZK -force' --with-identity=mncars001
+
+# QJM startup
+manager> mco rpc service start service=hadoop-hdfs-journalnode --with-identity mncars001
+manager> mco rpc service start service=hadoop-hdfs-journalnode --with-identity mncars002
+manager> mco rpc service start service=hadoop-hdfs-journalnode --with-identity mncars003
+
+# HDFS format initialization
+manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hdfs namenode -format' --with-identity=mncars001
+
+# Namenodes startup
+manager> mco rpc service start service=hadoop-hdfs-namenode --with-identity mncars001
+manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hdfs namenode -bootstrapStandby' --with-identity=mncars002
+manager> mco rpc service start service=hadoop-hdfs-namenode --with-identity mncars002
+
+# Automatic Failover startup
+manager> mco rpc service start service=hadoop-hdfs-zkfc --with-identity mncars001
+manager> mco rpc service start service=hadoop-hdfs-zkfc --with-identity mncars002
+
+# Testing HA
+manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hdfs haadmin -getServiceState nn1' --with-identity=mncars001
+manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hdfs haadmin -getServiceState nn2' --with-identity=mncars001
+
+# Workers startup 
+manager> mco rpc service start service=hadoop-hdfs-datanode --with-identity mncars004
+manager> mco rpc service start service=hadoop-hdfs-datanode --with-identity mncars005
+manager> mco rpc service start service=hadoop-hdfs-datanode --with-identity mncars006
+
+# HDFS Filesystem housekeeping
+manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hadoop fs -mkdir /tmp' --with-identity=mncars001
+manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hadoop fs -chmod -R 1777 /tmp' --with-identity=mncars001
+manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hdfs dfs -ls -R /' --with-identity=mncars001
+manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hdfs dfsadmin -printTopology' --with-identity=mncars001
+manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hdfs dfsadmin -report' --with-identity=mncars001
+
+# YARN and MRv2
+manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hadoop fs -mkdir -p /user/history' --with-identity=mncars001
+manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hadoop fs -mkdir /user/history/done_intermediate' --with-identity=mncars001
+manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hadoop fs -chown -R mapred:mapred /user/history' --with-identity=mncars001
+manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hadoop fs -chmod -R 777 /user/history' --with-identity=mncars001
+
+# HistoryServer
+manager> mco rpc service start service=hadoop-mapreduce-historyserver --with-identity mncars003
+manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hadoop fs -mkdir -p /var/log/hadoop-yarn' --with-identity=mncars001
+manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hadoop fs -chown yarn:mapred /var/log/hadoop-yarn
+' --with-identity=mncars001
+
+# MRv2 user
+manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hadoop fs -mkdir -p /user/jroman' --with-identity=mncars001
+manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hadoop fs -chown jroman /user/jroman' --with-identity=mncars001
+
+# YARN ResourceManager and workers startup
+manager> mco rpc service start service=hadoop-yarn-resourcemanager --with-identity mncars003
+manager> mco rpc service start service=hadoop-yarn-nodemanager --with-identity mncars004
+manager> mco rpc service start service=hadoop-yarn-nodemanager --with-identity mncars005
+manager> mco rpc service start service=hadoop-yarn-nodemanager --with-identity mncars006
 
 
-
-
-
-
+manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hadoop jar /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-jobclient-2.2.0.jar' --with-identity=mncars001
 
 
 
