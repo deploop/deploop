@@ -56,8 +56,10 @@ module MCollective
         env = request[:env]
         env = "environment=#{env}"
         factpath='factpath=/var/lib/puppet/facts.d/'
+        disableplugin='pluginsync=false'
 
         File.open("/etc/puppet/puppet.conf","a+") {|f| 
+          f.puts(disableplugin)
           f.puts(factpath) 
           f.puts(env)
         }

@@ -4,6 +4,17 @@
 exit 1
 
 ###################################################################
+# 0. Minimal software requeriments for raise a Deploop able node:
+# mcollective 
+# mcollective-service-agent
+# mcollective-puppet-agent
+# mcollective-deploop-agent
+# puppet 
+###################################################################
+
+manager> mco ping
+
+###################################################################
 # 1. The fist step is define the Puppet environmet per host:
 #
 # This match with the Puppet environment configuration
@@ -93,7 +104,8 @@ manager> mco rpc deploop execute cmd='uname -a' --with-identity=mncars001
 manager> mco rpc service start service=atd --with-identity mncars001
 manager> mco rpc service stop service=atd --with-identity mncars001
 manager> mco rpc service status service=atd --with-identity mncars001
-
+manager>  mco rpc package update package=puppet
+manager>  mco rpc package install package=atd
 
 ###################################################################
 # 6. Coomand guide for Hadoop setup
