@@ -179,6 +179,13 @@ manager> mco rpc service start service=hadoop-yarn-nodemanager --with-identity m
 
 manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hadoop jar /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-jobclient-2.2.0.jar' --with-identity=mncars001
 
+# KDC setup
+manager> mco rpc deploop puppet_environment env=production --with-identity=mncarsnas
+manager> mco rpc deploop create_fact fact='collection' value='production' --with-identity=mncarsnas
+manager> mco rpc deploop create_fact fact='category' value='kdc' --with-identity=mncarsnas
+manager> mco rpc deploop create_fact fact='role' value='master' --with-identity=mncarsnas
+manager> mco rpc deploop create_fact fact='entity' value='flume' --with-identity=mncarsnas
+manager> mco inventory mncarsnas  | grep deploop_
 
 
 
