@@ -95,7 +95,7 @@ deploop_category: batch
 deploop_role    : rm hbase-master
 deploop_entity  : flume
 
-Workers
+Hadoop Workers
 
 deploop_category: batch
 deploop_role    : dn
@@ -104,19 +104,19 @@ deploop_entity  : flume
 Storm-Nimbus
 
 deploop_category: realtime
-deploop_role    : nimbus
+deploop_role    : storm-nimbus
 deploop_entity  : flume
 
 Storm-Workers
 
 deploop_category: realtime
-deploop_role    : supervisor
+deploop_role    : storm-supervisor
 deploop_entity  : flume
 
 kafka-Worker
 
 deploop_category: realtime
-deploop_role    : broker
+deploop_role    : kafka-broker
 deploop_entity  : flume
 
 [Scenario 2]
