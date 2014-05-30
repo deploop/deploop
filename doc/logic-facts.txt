@@ -1,0 +1,230 @@
+Facts scheme
+============
+
+		Deploop
+		   |
+ collection0--collection1--collection2 	: Pre, Pro, Dev, Test
+		   |
+    category0--category1--category2	: RT, Batch, Other
+		   |
+	    role0--role1--role3		: DataNode, KDC, NameNode
+	           |
+	entity0-entity1-entity2		: Flume, Monit, kafka, Storm
+
+Example:
+
+Available Deploop Facts and values
+==================================
+
+- deploop_collection: A host only belongs to a collection.
+
+[preproduction | production | test]
+
+Those values have to match with the Puppet enviroment defined.
+
+- deploop_category: A host only belongs to a category.
+
+[realtime | batch | bus | kdc]
+
+- deploop_role: A host can belogns to many roles. 
+
+[nn1 | nn2 | rm | dn]
+
+- deploop_entity: A host cat install many entities.
+
+[flume | kafka | storm-nimbus | monit]
+
+
+Deploop facts architecture examples
+====================================
+
+1. Hadoop deployment, only the Batch Layer
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Namenode 1 
+
+deploop_category: batch
+deploop_role    : nn1
+deploop_entity  : flume
+
+Namenode 2
+
+deploop_category: batch
+deploop_role    : nn2
+deploop_entity  : flume
+
+ResourceManager
+
+deploop_category: batch
+deploop_role    : rm
+deploop_entity  : flume
+
+Workers
+
+deploop_category: batch
+deploop_role    : dn
+deploop_entity  : flume
+
+2. Lambda Architecture: Batch Layer, Speed Layer, Serving Layer, Query Layer
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Note: For us Serving layer is the "batch view" and "real-time view" together.
+
+[Secenario 1]
+
+Batch Layer  : Hadoop + MRv2
+Speed Layer  : Storm
+Serving Layer: HBase
+Query Layer  : Hive + Pentaho
+
+Namenode 1 
+
+deploop_category: batch
+deploop_role    : nn1
+deploop_entity  : flume
+
+Namenode 2
+
+deploop_category: batch
+deploop_role    : nn2
+deploop_entity  : flume
+
+ResourceManager
+
+deploop_category: batch
+deploop_role    : rm hbase-master
+deploop_entity  : flume
+
+Workers
+
+deploop_category: batch
+deploop_role    : dn
+deploop_entity  : flume
+
+Storm-Nimbus
+
+deploop_category: realtime
+deploop_role    : nimbus
+deploop_entity  : flume
+
+Storm-Workers
+
+deploop_category: realtime
+deploop_role    : supervisor
+deploop_entity  : flume
+
+kafka-Worker
+
+deploop_category: realtime
+deploop_role    : broker
+deploop_entity  : flume
+
+[Scenario 2]
+
+Batch Layer  : Hadoop + MRv2 
+Speed Layer  : Storm
+Serving Layer: ElasticSearch
+Query Layer  : Hive + Pentaho + Kibana
+
+Namenode 1 
+
+deploop_category: batch
+deploop_role    : nn1
+deploop_entity  : flume
+
+Namenode 2
+
+deploop_category: batch
+deploop_role    : nn2
+deploop_entity  : flume
+
+ResourceManager
+
+deploop_category: batch
+deploop_role    : rm
+deploop_entity  : flume
+
+Workers
+
+deploop_category: batch
+deploop_role    : dn
+deploop_entity  : flume
+
+
+[Scenario 3]
+
+Batch Layer  : Hadoop + MRv2 + Spark
+Speed Layer  : Spark Streaming
+Serving Layer: HBase
+Query Layer  : Hive + Pentaho
+
+Namenode 1 
+
+deploop_category: batch
+deploop_role    : nn1
+deploop_entity  : flume 
+
+Namenode 2
+
+deploop_category: batch
+deploop_role    : nn2
+deploop_entity  : flume
+
+ResourceManager
+
+deploop_category: batch
+deploop_role    : rm hbase-master
+deploop_entity  : flume 
+
+Workers
+
+deploop_category: batch
+deploop_role    : dn hbase-region
+deploop_entity  : flume 
+
+
+[Scenario 4]
+
+Batch Layer  : Hadoop + MRv2 + Spark
+Speed Layer  : Spark Streaming
+Serving Layer: ElasticSearch
+Query Layer  : Hive + Pentaho + Kibana
+
+Namenode 1 
+
+deploop_category: batch
+deploop_role    : nn1
+deploop_entity  : flume
+
+Namenode 2
+
+deploop_category: batch
+deploop_role    : nn2
+deploop_entity  : flume
+
+ResourceManager
+
+deploop_category: batch
+deploop_role    : rm
+deploop_entity  : flume
+
+Workers
+
+deploop_category: batch
+deploop_role    : dn
+deploop_entity  : flume
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
