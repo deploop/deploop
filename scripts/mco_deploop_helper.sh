@@ -183,7 +183,7 @@ manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -
 manager> mco rpc deploop puppet_environment env=production --with-identity=mncarsnas
 manager> mco rpc deploop create_fact fact='collection' value='production' --with-identity=mncarsnas
 manager> mco rpc deploop create_fact fact='category' value='kdc' --with-identity=mncarsnas
-manager> mco rpc deploop create_fact fact='role' value='master' --with-identity=mncarsnas
+manager> mco rpc deploop create_fact fact='role' value='kdc-server' --with-identity=mncarsnas
 manager> mco rpc deploop create_fact fact='entity' value='flume' --with-identity=mncarsnas
 manager> mco inventory mncarsnas  | grep deploop_
 

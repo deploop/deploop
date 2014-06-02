@@ -1,0 +1,16 @@
+$ yum install krb5-workstation
+$ yum install krb5-server
+$ kdb5_util create -s -r DEPLOOP.ORG
+$ vim /etc/krb5.conf
+$ vim /var/kerberos/krb5kdc/kdc.conf
+$ vim /var/kerberos/krb5kdc/kadm5.acl
+$ /etc/init.d/krb5kdc start
+$ kadmin.local
+kadmin.local: addprinc -randkey buildoop/admin 
+kadmin.local: xst -norandkey -k /root/buildoop.keytab buildoop/admin
+kadmin.local: listprincs
+kadmin.local: quit
+$ /etc/init.d/kadmin start
+$ kadmin
+$ kadmin -kt /root/deploop.keytab -p deploop/admin -q listprincs
+
