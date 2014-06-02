@@ -1,9 +1,29 @@
+KDC setting up
+~~~~~~~~~~~~~~
 $ yum install krb5-workstation
 $ yum install krb5-server
 $ kdb5_util create -s -r DEPLOOP.ORG
 $ vim /etc/krb5.conf
+
+[libdefaults]
+ default_realm = DEPLOOP.ORG
+ ...
+ [realms]
+  DEPLOOP.ORG = {
+   kdc = mncarsnas.condor.local
+   admin_server = mncarsnas.condor.local
+ }
+ ...
+
 $ vim /var/kerberos/krb5kdc/kdc.conf
+
+supported_enctypes = aes128-cts:normal ...
+(erase 256 encryption, so we do not need Java Cryptography Extension - JCE)
+
 $ vim /var/kerberos/krb5kdc/kadm5.acl
+
+*/admin@DEPLOOP.ORG *
+
 $ /etc/init.d/krb5kdc start
 $ kadmin.local
 kadmin.local: addprinc -randkey buildoop/admin 
@@ -13,4 +33,9 @@ kadmin.local: quit
 $ /etc/init.d/kadmin start
 $ kadmin
 $ kadmin -kt /root/deploop.keytab -p deploop/admin -q listprincs
+
+Principals creation
+~~~~~~~~~~~~~~~~~~~
+
+
 
