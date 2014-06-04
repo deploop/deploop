@@ -18,29 +18,35 @@ require 'open3'
 require "mcollective"
 include MCollective::RPC
 
+$principals=['hdfs', 'yarn', 'mapred', 'HTTP', 'vagrant', 'zookeeper', 'flume', 'oozie']
+$realm='BUILDOOP.ORG'
+$domain=$realm.downcase
+$security_path='/root/principals'
+
 # sanity checking
-min_release  = "1.8.7 (2011-06-30)"
-ruby_release = "#{RUBY_VERSION} (#{RUBY_RELEASE_DATE})"
-if ruby_release != min_release
-  abort "This program requires Ruby version #{min_release}.
-    You're running #{ruby_release}; please upgrade to continue."
+$min_release  = "1.8.7 (2011-06-30)"
+$ruby_release = "#{RUBY_VERSION} (#{RUBY_RELEASE_DATE})"
+if $ruby_release != $min_release
+  abort "This program requires Ruby version #{$min_release}.
+    You're running #{$ruby_release}; please upgrade to continue."
 end
 
 puts "The Marionette Collective version #{MCollective.version}"
 
-mc = rpcclient "rpcutil"
-mc.compound_filter 'deploop_collection=/.*/'
-nodes = mc.discover
+$mc = rpcclient "rpcutil"
+$mc.compound_filter 'deploop_collection=/.*/'
+$nodes = $mc.discover
 
 puts "Creating keytab per node: "
-nodes.each do |c| 
-  cmd = "echo #{c}"
-  Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
-    stdout.each_line { |line| puts line }
+$nodes.each do |h| 
+  $principals.each do |p|
+    cat = "/usr/bin/kadmin -q \'delprinc -force #{p}/#{h}.#{$realm.downcase}@#{$realm}\'"
+    puts cat
+    cmd = "echo"
+    Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
+      stdout.each_line { |line| puts line }
+    end
   end
 end
-
-
-
 
 
