@@ -13,38 +13,74 @@
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed
+#
+# Software:
+# rvm install ruby-2.1.1
+# rvm use 2.1.1
+# gem install mcollective-client
 
 require 'open3'
+require 'fileutils'
 require "mcollective"
+
 include MCollective::RPC
 
-$principals=['hdfs', 'yarn', 'mapred', 'HTTP', 'vagrant', 'zookeeper', 'flume', 'oozie']
-$realm='BUILDOOP.ORG'
-$domain=$realm.downcase
-$security_path='/root/principals'
-
-# sanity checking
-$min_release  = "1.8.7 (2011-06-30)"
-$ruby_release = "#{RUBY_VERSION} (#{RUBY_RELEASE_DATE})"
-if $ruby_release != $min_release
-  abort "This program requires Ruby version #{$min_release}.
-    You're running #{$ruby_release}; please upgrade to continue."
+def runCommand(cmd)
+  Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
+    stdout.each_line { |line| puts line }
+  end
 end
 
-puts "The Marionette Collective version #{MCollective.version}"
+def sanityChecking()
+  # $min_release  = '1.8.7 (2011-06-30)'
+  $min_release  = '2.1.1 (2014-02-24)'
+  $ruby_release = "#{RUBY_VERSION} (#{RUBY_RELEASE_DATE})"
+  if $ruby_release != $min_release
+    abort "This program requires Ruby version #{$min_release}.
+    You're running #{$ruby_release}; please upgrade to continue."
+  end
+  puts "The Marionette Collective version #{MCollective.version}"
+end
 
+sanityChecking
+
+# kerberos
+$principals=['hdfs', 'yarn', 'mapred', 'HTTP', 'vagrant', 'zookeeper', 'flume', 'oozie']
+$realm='DEPLOOP.ORG'
+$security_path='/root/principals'
+$adm_keytab='/root/deploop.keytab'
+$adm_princ='deploop/admin'
+$kdm='/usr/bin/kadmin'
+
+# mcollective
 $mc = rpcclient "rpcutil"
 $mc.compound_filter 'deploop_collection=/.*/'
 $nodes = $mc.discover
 
 puts "Creating keytab per node: "
+
+FileUtils::mkdir_p $security_path
+
+# each node in mcollective discover
 $nodes.each do |h| 
+
+  # each principal in kerberos
+  FileUtils::mkdir_p $security_path + '/' + h
   $principals.each do |p|
-    cat = "/usr/bin/kadmin -q \'delprinc -force #{p}/#{h}.#{$realm.downcase}@#{$realm}\'"
-    puts cat
-    cmd = "echo"
-    Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
-      stdout.each_line { |line| puts line }
+    $cmds = ["#{$kdm} -kt #{$adm_keytab} -p #{$adm_princ} \
+      -q \'delprinc -force #{p}/#{h}.#{$realm.downcase}@#{$realm}\'",
+    "#{$kdm} -kt #{$adm_keytab} -p #{$adm_princ} \
+      -q \'ank -randkey #{p}/#{h}.#{$realm.downcase}@#{$realm}\'",
+    "#{$kdm} -kt #{$adm_keytab} -p #{$adm_princ} \
+      -q \'xst -k #{$security_path}/#{h}/#{p}.keytab #{p}/#{h}.#{$realm.downcase}@#{$realm}\'",
+    "#{$kdm} -kt #{$adm_keytab} -p #{$adm_princ} \
+      -q \'xst -k #{$security_path}/#{h}/#{p}.keytab HTTP/#{h}.#{$realm.downcase}@#{$realm}\'"]
+
+    # each command per principal
+    $cmds.each do |c|
+      puts c
+      cmd = c
+      runCommand cmd
     end
   end
 end
