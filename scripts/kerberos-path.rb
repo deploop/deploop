@@ -21,6 +21,7 @@
 
 require 'open3'
 require 'fileutils'
+require 'socket'
 require "mcollective"
 
 include MCollective::RPC
@@ -47,7 +48,7 @@ sanityChecking
 # kerberos
 $principals=['hdfs', 'yarn', 'mapred', 'HTTP', 'vagrant', 'zookeeper', 'flume', 'oozie']
 $realm='DEPLOOP.ORG'
-$security_path='/root/principals'
+$security_path='/var/kerberos/principals'
 $adm_keytab='/root/deploop.keytab'
 $adm_princ='deploop/admin'
 $kdm='/usr/bin/kadmin'
@@ -64,17 +65,18 @@ FileUtils::mkdir_p $security_path
 # each node in mcollective discover
 $nodes.each do |h| 
 
+  fqdn = Socket.gethostbyname(h)[0]
   # each principal in kerberos
-  FileUtils::mkdir_p $security_path + '/' + h
+  FileUtils::mkdir_p $security_path + '/' + fqdn
   $principals.each do |p|
     $cmds = ["#{$kdm} -kt #{$adm_keytab} -p #{$adm_princ} \
-      -q \'delprinc -force #{p}/#{h}.#{$realm.downcase}@#{$realm}\'",
+      -q \'delprinc -force #{p}/#{fqdn}.#{$realm.downcase}@#{$realm}\'",
     "#{$kdm} -kt #{$adm_keytab} -p #{$adm_princ} \
-      -q \'ank -randkey #{p}/#{h}.#{$realm.downcase}@#{$realm}\'",
+      -q \'ank -randkey #{p}/#{fqdn}.#{$realm.downcase}@#{$realm}\'",
     "#{$kdm} -kt #{$adm_keytab} -p #{$adm_princ} \
-      -q \'xst -k #{$security_path}/#{h}/#{p}.keytab #{p}/#{h}.#{$realm.downcase}@#{$realm}\'",
+      -q \'xst -k #{$security_path}/#{fqdn}/#{p}.keytab #{p}/#{fqdn}.#{$realm.downcase}@#{$realm}\'",
     "#{$kdm} -kt #{$adm_keytab} -p #{$adm_princ} \
-      -q \'xst -k #{$security_path}/#{h}/#{p}.keytab HTTP/#{h}.#{$realm.downcase}@#{$realm}\'"]
+      -q \'xst -k #{$security_path}/#{fqdn}/#{p}.keytab HTTP/#{fqdn}.#{$realm.downcase}@#{$realm}\'"]
 
     # each command per principal
     $cmds.each do |c|
