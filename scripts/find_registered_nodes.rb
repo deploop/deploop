@@ -16,7 +16,7 @@
 
 # mco find --with-fact "deploop_collection=/.*/"
 
-
+require 'rubygems'
 require "mcollective"
 include MCollective::RPC
    
