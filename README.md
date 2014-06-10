@@ -3,14 +3,11 @@ Deploop: The Hadoop Deploy System
 
 Work in progress ... coming soon.
 
-Projects references
--------------------
+Project info
+------------
 
-https://github.com/ajf8/mcomaster - Ruby on Rails MCollective GUI
+More info in doc folder.
 
-https://github.com/kermitfr/kermit-webui - DJango Puppet adn MCollective GUI
-
-https://github.com/sodabrew/puppet-dashboard
 
 Pull request flow
 ------------------
