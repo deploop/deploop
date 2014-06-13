@@ -26,43 +26,49 @@ json = File.read('../conf/deploy.json')
 $parsed_obj = JSON.parse(json)
 
 $collections = ['production', 'preproduction', 'test']
-$categories = ['batch', 'realtime', 'bus', 'serving']
+$categories = ['batch', 'bus', 'realtime', 'serving']
 $roles_batch = ['nn1', 'nn2', 'rm', 'dn']
+$roles_realtime = ['master', 'worker']
+$roles_bus = ['master', 'worker']
+$roles_serving = ['master', 'worker']
 
 def create_facts(collection, category)
   case category
   when 'batch'
-    $roles_batch.each do |r|
-      case r
-      when 'dn'
+    $roles = $roles_batch
+  when 'realtime'
+    $roles = $roles_realtime
+  when 'bus'
+    $roles = $roles_bus
+  else
+    $roles = $roles_serving
+  end
+
+  $roles.each do |r|
+    case r
+    when 'dn', 'worker'
         $parsed_obj[collection][category][r].each do |w|
           $hostname=w['hostname']
           $entities=w['entity']
-          print "#{$hostname}: deploop_collection=production deploop_category=batch deploop_role=#{r} deploop_entity="
+          print "#{$hostname}: deploop_collection=#{collection} "
+          print "deploop_category=#{category} deploop_role=#{r} deploop_entity="
           $entities.each do |e|
             print e + " "
           end
           puts ""
         end
-      else
+    else
         $hostname=$parsed_obj[collection][category][r]["hostname"]
         $entities=$parsed_obj[collection][category][r]["entity"]
-        print "#{$hostname}: deploop_collection=production deploop_category=batch deploop_role=#{r} deploop_entity="
+        print "#{$hostname}: deploop_collection=#{collection} "
+        print "deploop_category=#{category} deploop_role=#{r} deploop_entity="
         $entities.each do |e|
           print e + " "
         end
         puts ""
-      end
     end
-  when 'realtime'
-    puts 'realtime'
-  when 'bus'
-    puts 'bus'
-  when 'serving'
-    puts 'serving'
   end
 end
-
 
 $collections.each do |a|
   if $parsed_obj[a]

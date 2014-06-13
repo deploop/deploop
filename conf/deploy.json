@@ -37,7 +37,7 @@
          "hostname": "mncars007",  
          "entity": ["flume"]  
        },
-      "workers": [
+      "worker": [
           { 
             "hostname":"mncars008",  
             "entity": ["flume"]  
@@ -55,7 +55,7 @@
          "hostname": "mncars010",  
          "entity": ["flume"]  
       },
-      "workers": [
+      "worker": [
           { 
             "hostname":"mncars011",  
             "entity": ["flume"]  
@@ -73,13 +73,13 @@
         "hostname": "mncars013",  
         "entity": ["flume"] 
       },
-      "workers": [
+      "worker": [
           { 
-            "hostname":"mncars011",  
+            "hostname":"mncars014",  
             "entity": ["flume"]  
           },
           { 
-            "hostname":"mncars012",  
+            "hostname":"mncars015",  
             "entity": ["flume"]  
           }
       ]
