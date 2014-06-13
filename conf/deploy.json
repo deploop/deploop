@@ -1,0 +1,88 @@
+{
+  "production": 
+  {
+    "name": "buildoop",
+    "batch": 
+    {
+      "nn1": {
+        "hostname": "mncars001",
+        "entity": ["flume", "monit"]
+      },
+      "nn2": {
+        "hostname": "mncars002",
+        "entity": ["flume", "monit"]
+      },
+      "rm": {
+        "hostname": "mncars003",
+        "entity": ["flume", "monit"]
+      },
+      "dn": [
+          { 
+            "hostname":"mncars004",  
+            "entity": ["flume"]  
+          },
+          { 
+            "hostname":"mncars005",  
+            "entity": ["flume"]  
+          },
+          { 
+            "hostname":"mncars006",  
+            "entity": ["flume"]  
+          }
+      ]
+    },
+    "bus": 
+    {
+      "master": {
+         "hostname": "mncars007",  
+         "entity": ["flume"]  
+       },
+      "workers": [
+          { 
+            "hostname":"mncars008",  
+            "entity": ["flume"]  
+          },
+          { 
+            "hostname":"mncars009",  
+            "entity": ["flume"]  
+          }
+      ]
+    },
+    "realtime": 
+    {
+      "name": "storm",
+      "master": {
+         "hostname": "mncars010",  
+         "entity": ["flume"]  
+      },
+      "workers": [
+          { 
+            "hostname":"mncars011",  
+            "entity": ["flume"]  
+          },
+          { 
+            "hostname":"mncars012",  
+            "entity": ["flume"]  
+          }
+      ]
+    },
+    "serving": 
+    {
+      "name": "hbase",
+      "master": {
+        "hostname": "mncars013",  
+        "entity": ["flume"] 
+      },
+      "workers": [
+          { 
+            "hostname":"mncars011",  
+            "entity": ["flume"]  
+          },
+          { 
+            "hostname":"mncars012",  
+            "entity": ["flume"]  
+          }
+      ]
+    }
+  }
+}

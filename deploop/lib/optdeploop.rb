@@ -29,14 +29,17 @@ class OptparseDeploop
     options.inplace = false
     options.encoding = "utf8"
     options.transfer_type = :auto
-    options.verbose = false
+    options.verbose = true
 
     opt_parser = OptionParser.new do |opts|
-      opts.banner = "Usage: " + File.basename(__FILE__) + " [options]"
+      # a banner, displayed at the top of the help screen.
+      opts.banner = "Usage: deploop [options]"
 
       opts.separator ""
       opts.separator "Specific options:"
 
+      # Define the options, and what they do
+      
       # Mandatory argument.
       opts.on("-r", "--require LIBRARY",
               "Require the LIBRARY before executing your script") do |lib|

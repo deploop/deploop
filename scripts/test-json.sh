@@ -1,0 +1,11 @@
+echo "Production cluster: $(cat deploy.json | jq '.production.name')"
+echo "Batch Layer"
+echo "-----------"
+echo "NameNode Active: $(cat deploy.json | jq '.production.batch.nn1.hostname')"
+echo "NameNode StandBy: $(cat deploy.json | jq '.production.batch.nn2.hostname')"
+echo "ResourceManager: $(cat deploy.json | jq '.production.batch.rm.hostname')"
+echo "DataNodes: $(cat deploy.json | jq '.production.batch.dn[0].hostname')"
+echo "$(cat deploy.json | jq '.production.batch.dn[1].hostname')"
+echo "$(cat deploy.json | jq '.production.batch.dn[2].hostname')"
+
+echo "deploop_collection="
