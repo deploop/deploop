@@ -29,7 +29,7 @@ $collections = ['production', 'preproduction', 'test']
 $categories = ['batch', 'bus', 'realtime', 'serving']
 $roles_batch = ['nn1', 'nn2', 'rm', 'dn']
 $roles_realtime = ['master', 'worker']
-$roles_bus = ['master', 'worker']
+$roles_bus = ['worker']
 $roles_serving = ['master', 'worker']
 
 def create_facts(collection, category)

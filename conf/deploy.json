@@ -33,11 +33,11 @@
     },
     "bus": 
     {
-      "master": {
-         "hostname": "mncars007",  
-         "entity": ["flume"]  
-       },
       "worker": [
+          { 
+            "hostname":"mncars007",  
+            "entity": ["flume"]  
+          },
           { 
             "hostname":"mncars008",  
             "entity": ["flume"]  
@@ -52,9 +52,9 @@
     {
       "name": "storm",
       "master": {
-         "hostname": "mncars010",  
+         "hostname": "mncars007",  
          "entity": ["flume"]  
-      },
+       },
       "worker": [
           { 
             "hostname":"mncars011",  
@@ -68,7 +68,7 @@
     },
     "serving": 
     {
-      "name": "hbase",
+      "name": "cassandra",
       "master": {
         "hostname": "mncars013",  
         "entity": ["flume"] 
