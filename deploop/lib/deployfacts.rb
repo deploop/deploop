@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby
 # vim: autoindent tabstop=2 shiftwidth=2 expandtab softtabstop=2 filetype=ruby
 #
 # Licensed to the Apache Software Foundation (ASF) under one
@@ -18,22 +17,11 @@
 # specific language governing permissions and limitations
 # under the License.
 
-require 'optparse'
-require 'optparse/time'
-require 'ostruct'
-require 'pp'
-require_relative '../lib/optdeploop'
-
-class DeploopCli
-  def initialize(argv)
-    options = OptionsParser::OptparseDeploop.parse(argv)
-    puts options
-  end
-
-  def walkOptions
-end
-
-if __FILE__ == $PROGRAM_NAME
-  cli = DeploopCli.new(ARGV)
+module DeployFacts
+  class FactsDeployer
+    def initialize
+      puts "FactsDeployer constructor"
+    end
+  end # class FactsDeployer
 end
 
