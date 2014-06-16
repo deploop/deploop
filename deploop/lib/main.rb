@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby
 # vim: autoindent tabstop=2 shiftwidth=2 expandtab softtabstop=2 filetype=ruby
 #
 # Licensed to the Apache Software Foundation (ASF) under one
@@ -18,24 +17,25 @@
 # specific language governing permissions and limitations
 # under the License.
 
-require 'optparse'
-require 'optparse/time'
-require 'ostruct'
-require 'pp'
-
-require_relative '../lib/optdeploop'
-require_relative '../lib/deployfacts'
-require_relative '../lib/main'
-
-class DeploopCli
-  def initialize(argv)
-    options = OptionsParser::OptparseDeploop.parse(argv)
-    facts = DeployFacts::FactsDeployer.new
-    Main::MainLogic.new(options)
-  end
-end
-
-if __FILE__ == $PROGRAM_NAME
-  cli = DeploopCli.new(ARGV)
+module Main
+  class MainLogic
+    def initialize(opt)
+      puts opt
+      if opt.json.empty?
+        puts "JSON file is mandatory"
+        exit
+      end
+      if opt.check?
+        puts opt.check
+        puts "checking JSON consistency"
+        exit
+      end
+      if opt.deploy?
+        puts opt.deploy
+      end
+      puts opt.json
+      puts opt.deploy
+    end
+  end # class MainLogic
 end
 

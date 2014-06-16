@@ -17,7 +17,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-require_relative 'deployfacts'
 
 module OptionsParser
   class OptparseDeploop
@@ -33,11 +32,9 @@ module OptionsParser
       # We set default values here.
       options = OpenStruct.new
       options.json = []
-      options.inplace = false
       options.encoding = "utf8"
       options.transfer_type = :auto
       options.verbose = true
-      facts = DeployFacts::FactsDeployer.new
 
       opt_parser = OptionParser.new do |opts|
         # a banner, displayed at the top of the help screen.
@@ -54,49 +51,14 @@ module OptionsParser
           options.json << json
         end
 
-        # Optional argument; multi-line description.
-        opts.on("-i", "--inplace [EXTENSION]",
-                "Edit ARGV files in place",
-                "  (make backup if EXTENSION supplied)") do |ext|
-          options.inplace = true
-          options.extension = ext || ''
-          options.extension.sub!(/\A\.?(?=.)/, ".")  # Ensure extension begins with dot.
-        end
-
-        # Cast 'delay' argument to a Float.
-        opts.on("--delay N", Float, "Delay N seconds before executing") do |n|
-          options.delay = n
-        end
-
-        # Cast 'time' argument to a Time object.
-        opts.on("-t", "--time [TIME]", Time, "Begin execution at given time") do |time|
-          options.time = time
-        end
-
-        # Cast to octal integer.
-        opts.on("-F", "--irs [OCTAL]", OptionParser::OctalInteger,
-                "Specify record separator (default \\0)") do |rs|
-          options.record_separator = rs
+       # Cast 'delay' argument to a Float.
+        opts.on("--check", "Check JSON file consistency") do |check|
+          options.check = check
         end
 
         # List of arguments.
-        opts.on("--list x,y,z", Array, "Example 'list' of arguments") do |list|
-          options.list = list
-        end
-
-        # Keyword completion.  We are specifying a specific set of arguments (CODES
-        # and CODE_ALIASES - notice the latter is a Hash), and the user may provide
-        # the shortest unambiguous text.
-        code_list = (CODE_ALIASES.keys + CODES).join(',')
-        opts.on("--code CODE", CODES, CODE_ALIASES, "Select encoding",
-                "  (#{code_list})") do |encoding|
-          options.encoding = encoding
-        end
-
-        # Optional argument with keyword completion.
-        opts.on("--type [TYPE]", [:text, :binary, :auto],
-                "Select transfer type (text, binary, auto)") do |t|
-          options.transfer_type = t
+        opts.on("--deploy batch,speed,bus", Array, "Example 'list' of arguments") do |deploy|
+          options.deploy = deploy
         end
 
         # Boolean switch.
