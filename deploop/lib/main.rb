@@ -35,15 +35,25 @@ module Main
           puts @opt
       end
 
+      #
+      # With jron file you can check the integrity
+      # or deploy the cluster.
+      #
       if !@opt.json.empty?
         if !File.exist?(@opt.json[0])
           @errhandle.msg "ERROR: unable open file #{@opt.json}"
           exit
         end
+        if @opt.show
+          @facts.showFacts(@opt.json[0])
+          exit
+        end
+        # integrity checking
         if @opt.check
           @facts.checkJSON(@opt.json[0])
           exit
         end
+        # cluster deployment
         if @opt.deploy
           puts "deploy"
         else

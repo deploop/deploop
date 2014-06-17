@@ -60,6 +60,11 @@ module OptionsParser
           options.check = check
         end
 
+        # show facts per host
+        opts.on("--show", "Show facts in JSON cluster schema") do |show|
+          options.show = show
+        end
+
         # List of arguments.
         opts.on("--deploy batch,speed,bus", Array, "Example 'list' of arguments") do |deploy|
           options.deploy = deploy

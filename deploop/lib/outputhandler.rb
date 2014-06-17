@@ -32,13 +32,13 @@ module OutputModule
         puts msg
       end
     end
-
-    class OutputHandler
-      def initialize(output)
-        @jsoned = output
-      end
-    end
   end # class ErrorHandler
+
+  class OutputHandler
+    def initialize(output)
+        @jsoned = output
+    end
+  end # class OutputHandler
 end
 
 

@@ -17,25 +17,135 @@
 # specific language governing permissions and limitations
 # under the License.
 
+# == deployfacts.rb
+#
+# This file contains the Dice class definition and it runs
+# some simple test code on a 16 sided dice.  A 20 dice
+# roll fight again the COMPUTER who always rolls 10s!
+#
+# == Contact
+#
+# Author::  Javi Roman <javiroman@redoop.org>
+# Website:: https://github.com/deploop/deploop
+# Date:: 17-06-2014 
+
 require 'rubygems'
 require 'json'
 require 'pp'
 
 module DeployFacts
+  # Multi-sided dice class.  The number of sides is determined
+  # in the constructor, or later on by accessing the _sides_
+  # attribute.
+  #
+  # == Summary
+  #  
+  # A #single_roll returns a single integer from 1 to the
+  # number of sides, _inclusive_.  However, if you want to
+  # roll multiple times you can can use the #roll method,
+  # specifying the number of rolls you want, and you will
+  # get an Array with the values of all the rolls!
+  # 
+  # == Example
+  # 
+  #     dice = Dice.new(8)   # An eight sided dice
+  #     four = dice.roll(4)  # An Array containing 4 rolls
+  #     sum  = four.inject(0) { |mem,i| mem+i } # Sum of rolls
+  # 
   class FactsDeployer
     def initialize
-      #puts "FactsDeployer constructor"
+      @collections = ['production', 'preproduction', 'test']
+      @categories = ['batch', 'bus', 'realtime', 'serving']
+      @roles_batch = ['nn1', 'nn2', 'rm', 'dn']
+      @roles_realtime = ['master', 'worker']
+      @roles_bus = ['worker']
+      @roles_serving = ['master', 'worker']
+      @parsed_obj = nil
+
+      @cluster_hosts = nil
+      @host_facts = {
+        :hostname => '',
+        :facts => ''
+        }
     end
 
+    # ==== Summary
+    #
+    # This method is used for check the JSON schema 
+    # integrity, the syntax integrity and the cluster
+    # logical organization. For example, you can not
+    # deploy a Hadoop cluster without a NameNode node
+    # in the JSON schema.
+    #
+    # ==== Attributes
+    #
+    # * +json+ - JSON file describing the cluster schema
+    #
+    # ==== Returns
+    #  
+    # ==== Examples
+    #
     def checkJSON(json)
       jsonObj = File.read(json)
       begin
-          $parsed_obj = JSON.parse(jsonObj)
+          @parsed_obj = JSON.parse(jsonObj)
       rescue JSON::ParserError => e
         puts "ERROR: JSON file parsing error"
         exit
       end
     end # class FactsDeployer
-  end
+
+    def create_facts(collection, category)
+      case category
+      when 'batch'
+        $roles = @roles_batch
+      when 'realtime'
+        $roles = @roles_realtime
+      when 'bus'
+        $roles = @roles_bus
+      else
+        $roles = @roles_serving
+      end
+
+      $roles.each do |r|
+        case r
+        when 'dn', 'worker'
+            @parsed_obj[collection][category][r].each do |w|
+              $hostname=w['hostname']
+              $entities=w['entity']
+              print "#{$hostname}: deploop_collection=#{collection} "
+              print "deploop_category=#{category} deploop_role=#{r} deploop_entity="
+              $entities.each do |e|
+                print e + " "
+              end
+              puts ""
+            end
+        else
+            $hostname=@parsed_obj[collection][category][r]["hostname"]
+            $entities=@parsed_obj[collection][category][r]["entity"]
+            print "#{$hostname}: deploop_collection=#{collection} "
+            print "deploop_category=#{category} deploop_role=#{r} deploop_entity="
+            $entities.each do |e|
+              print e + " "
+            end
+            puts ""
+        end
+      end
+    end
+
+    def showFacts(json)
+      checkJSON(json)
+      @collections.each do |a|
+        if @parsed_obj[a]
+          @categories.each do |b|
+            if @parsed_obj['production'][b]
+              create_facts 'production',b
+            end
+          end
+        end
+      end
+    end
+
+  end # class FactsDeployer
 end
 
