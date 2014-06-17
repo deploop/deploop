@@ -75,6 +75,11 @@ module OptionsParser
           options.verbose = v
         end
 
+        # Testing for rails
+        opts.on("-t", "--test", Array, "Run error or output test") do |t|
+          options.test = t
+        end
+
         opts.separator ""
         opts.separator "Common options:"
 
@@ -86,7 +91,7 @@ module OptionsParser
 
         # Another typical switch to print the version.
         opts.on_tail("--version", "Show version") do
-          puts ::Version.join('.')
+          puts $VERSION 
           exit
         end
       end

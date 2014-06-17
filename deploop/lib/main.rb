@@ -45,7 +45,7 @@ module Main
           exit
         end
         if @opt.show
-          @facts.showFacts(@opt.json[0])
+          @facts.createFactsHash(@opt.json[0], true)
           exit
         end
         # integrity checking
@@ -55,7 +55,7 @@ module Main
         end
         # cluster deployment
         if @opt.deploy
-          puts "deploy"
+          @facts.createFactsHash(@opt.json[0], false)
         else
           puts "you have to put more options"
         end

@@ -62,11 +62,17 @@ module DeployFacts
       @roles_serving = ['master', 'worker']
       @parsed_obj = nil
 
-      @cluster_hosts = nil
-      @host_facts = {
-        :hostname => '',
-        :facts => ''
-        }
+      # host = {'mncars001' => 
+      #           {deploop_collection:'production', deploop_category:'batch',
+      #            deploop_role:'nn1',deploop_entity:'flume'}, 
+      #         'mncars002' => 
+      #           {deploop_collection:'production', deploop_category:'batch',
+      #            deploop_role:'nn2',deploop_entity:'flume'}, 
+      #         }
+      #
+      # host['mncars003'] = {:a=>"mierda", :b=>"caca"}
+      
+      @host_facts = Hash.new
     end
 
     # ==== Summary
@@ -95,7 +101,7 @@ module DeployFacts
       end
     end # class FactsDeployer
 
-    def create_facts(collection, category)
+    def create_facts(collection, category, show)
       case category
       when 'batch'
         $roles = @roles_batch
@@ -110,9 +116,36 @@ module DeployFacts
       $roles.each do |r|
         case r
         when 'dn', 'worker'
-            @parsed_obj[collection][category][r].each do |w|
+          @parsed_obj[collection][category][r].each do |w|
               $hostname=w['hostname']
               $entities=w['entity']
+
+              @host_facts[$hostname] = 
+                { :deploop_collection => collection, 
+                  :deploop_category => category,
+                  :deploop_role => r,
+                  :deploop_entity => $entities }
+
+              if show
+                print "#{$hostname}: deploop_collection=#{collection} "
+                print "deploop_category=#{category} deploop_role=#{r} deploop_entity="
+                $entities.each do |e|
+                  print e + " "
+                end
+                puts ""
+              end
+           end
+        else
+            $hostname=@parsed_obj[collection][category][r]["hostname"]
+            $entities=@parsed_obj[collection][category][r]["entity"]
+
+            @host_facts[$hostname] = 
+                { :deploop_collection => collection, 
+                  :deploop_category => category,
+                  :deploop_role => r,
+                  :deploop_entity => $entities }
+
+            if show
               print "#{$hostname}: deploop_collection=#{collection} "
               print "deploop_category=#{category} deploop_role=#{r} deploop_entity="
               $entities.each do |e|
@@ -120,31 +153,34 @@ module DeployFacts
               end
               puts ""
             end
-        else
-            $hostname=@parsed_obj[collection][category][r]["hostname"]
-            $entities=@parsed_obj[collection][category][r]["entity"]
-            print "#{$hostname}: deploop_collection=#{collection} "
-            print "deploop_category=#{category} deploop_role=#{r} deploop_entity="
-            $entities.each do |e|
-              print e + " "
-            end
-            puts ""
         end
       end
     end
 
-    def showFacts(json)
+    def createFactsHash(json, show)
       checkJSON(json)
       @collections.each do |a|
         if @parsed_obj[a]
           @categories.each do |b|
             if @parsed_obj['production'][b]
-              create_facts 'production',b
+              create_facts 'production',b, show
             end
           end
         end
       end
+      if !show
+        deployFacts
+      end
     end
+
+    def deployFacts()
+      @host_facts.each do |f|
+        print "Deploying host: " + f[0] + " -> "
+        print f[1][:deploop_collection] + " "
+        print f[1][:deploop_role] + " "
+        puts f[1][:deploop_entity]
+      end
+    end 
 
   end # class FactsDeployer
 end
