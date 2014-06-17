@@ -32,9 +32,8 @@ module OptionsParser
       # We set default values here.
       options = OpenStruct.new
       options.json = []
-      options.encoding = "utf8"
-      options.transfer_type = :auto
-      options.verbose = true
+      options.verbose = false
+      options.output = false
 
       opt_parser = OptionParser.new do |opts|
         # a banner, displayed at the top of the help screen.
@@ -46,9 +45,14 @@ module OptionsParser
         # Define the options, and what they do
         
         # Mandatory argument.
-        opts.on("-j", "--json CLUSTER_SCHEMA",
-                "Require the JSON file describing your cluster for deploy") do |json|
-          options.json << json
+        opts.on("-j", "--json",
+                "Deploop output formating in JSON") do |j|
+          options.output = true
+        end
+
+        opts.on("-f", "--file CLUSTER_SCHEMA",
+                "Require the JSON file describing your cluster for deploy") do |file|
+          options.json << file
         end
 
        # Cast 'delay' argument to a Float.

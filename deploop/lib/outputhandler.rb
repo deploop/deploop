@@ -17,41 +17,29 @@
 # specific language governing permissions and limitations
 # under the License.
 
-require_relative '../lib/deployfacts'
-require_relative '../lib/outputhandler'
-
-module Main
-  class MainLogic
-
-    def initialize(opt)
-      @facts = DeployFacts::FactsDeployer.new
-      @errhandle = OutputModule::ErrorHandler.new opt.output
-      @opt = opt
-      navigateOptions
+module OutputModule
+  class ErrorHandler
+    def initialize(output)
+      @jsoned = output
     end
 
-    def navigateOptions()
-      if @opt.verbose 
-          puts @opt
-      end
-
-      if !@opt.json.empty?
-        if !File.exist?(@opt.json[0])
-          @errhandle.msg "ERROR: unable open file #{@opt.json}"
-          exit
-        end
-        if @opt.check
-          @facts.checkJSON(@opt.json[0])
-          exit
-        end
-        if @opt.deploy
-          puts "deploy"
-        else
-          puts "you have to put more options"
-        end
-        
+    def msg(msg)
+      if @jsoned
+        jerror = {:error => true, :why => msg}
+        puts JSON.generate jerror
+        JSON.generate jerror
+      else
+        puts msg
       end
     end
-  end # class MainLogic
+
+    class OutputHandler
+      def initialize(output)
+        @jsoned = output
+      end
+    end
+  end # class ErrorHandler
 end
+
+
 

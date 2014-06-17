@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # vim: autoindent tabstop=2 shiftwidth=2 expandtab softtabstop=2 filetype=ruby
 #
 # Licensed to the Apache Software Foundation (ASF) under one
@@ -17,41 +18,23 @@
 # specific language governing permissions and limitations
 # under the License.
 
-require_relative '../lib/deployfacts'
-require_relative '../lib/outputhandler'
+require 'open3'
+require 'json'
 
-module Main
-  class MainLogic
-
-    def initialize(opt)
-      @facts = DeployFacts::FactsDeployer.new
-      @errhandle = OutputModule::ErrorHandler.new opt.output
-      @opt = opt
-      navigateOptions
-    end
-
-    def navigateOptions()
-      if @opt.verbose 
-          puts @opt
-      end
-
-      if !@opt.json.empty?
-        if !File.exist?(@opt.json[0])
-          @errhandle.msg "ERROR: unable open file #{@opt.json}"
-          exit
-        end
-        if @opt.check
-          @facts.checkJSON(@opt.json[0])
-          exit
-        end
-        if @opt.deploy
-          puts "deploy"
-        else
-          puts "you have to put more options"
-        end
-        
-      end
-    end
-  end # class MainLogic
+def runCommand(cmd)
+  stdout, stderr, status = Open3.capture3(cmd)
+  stdout
 end
+
+# command error test
+cmd = '../bin/deploop -f ../conf/deloy.json -j'
+json = runCommand(cmd)
+
+$err_obj = JSON.parse(json)
+if $err_obj['error']
+  puts "#{$err_obj['why']}"
+else
+  puts "execution OK"
+end
+
 

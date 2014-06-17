@@ -24,13 +24,11 @@ require 'ostruct'
 require 'pp'
 
 require_relative '../lib/optdeploop'
-require_relative '../lib/deployfacts'
 require_relative '../lib/main'
 
 class DeploopCli
   def initialize(argv)
     options = OptionsParser::OptparseDeploop.parse(argv)
-    facts = DeployFacts::FactsDeployer.new
     Main::MainLogic.new(options)
   end
 end

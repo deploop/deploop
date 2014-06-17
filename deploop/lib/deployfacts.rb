@@ -17,11 +17,25 @@
 # specific language governing permissions and limitations
 # under the License.
 
+require 'rubygems'
+require 'json'
+require 'pp'
+
 module DeployFacts
   class FactsDeployer
     def initialize
-      puts "FactsDeployer constructor"
+      #puts "FactsDeployer constructor"
     end
-  end # class FactsDeployer
+
+    def checkJSON(json)
+      jsonObj = File.read(json)
+      begin
+          $parsed_obj = JSON.parse(jsonObj)
+      rescue JSON::ParserError => e
+        puts "ERROR: JSON file parsing error"
+        exit
+      end
+    end # class FactsDeployer
+  end
 end
 
