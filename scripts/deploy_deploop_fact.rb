@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # vim: autoindent tabstop=2 shiftwidth=2 expandtab softtabstop=2 filetype=ruby
 #
 # Licensed to the Apache Software Foundation (ASF) under one
@@ -17,34 +18,22 @@
 # specific language governing permissions and limitations
 # under the License.
 
-module OutputModule
-  class OutputHandler
-    def initialize(output)
-      @jsoned = output
-    end
+# mco rpc deploop puppet_environment env=production --with-identity=mncars001 
+# mco rpc deploop create_fact fact='collection' value='production' --with-identity=mncars001
 
-    def msgError(msg)
-      if @jsoned
-        jerror = {:error => true, :why => msg}
-        puts JSON.generate jerror
-        JSON.generate jerror
-      else
-        puts "\n" + msg
-      end
-      exit
-    end
+require "mcollective"
+include MCollective::RPC
+   
+$h = 'mncars001'
+mc = rpcclient "deploop"
 
-    def msgOutput(msg)
-      if @jsoned
-        jerror = {:error => false, :why => msg}
-        puts JSON.generate jerror
-        JSON.generate jerror
-      else
-        puts msg
-      end
-    end
-  end # class OutputHandler
-end
+mc.identity_filter "#{$h}"
+mc.progress = false
+
+#mc.puppet_environment(:env => 'production')
+mc.create_fact(:fact => 'collection', :value => 'production')
+
+mc.disconnect 
 
 
 

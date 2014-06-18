@@ -37,13 +37,29 @@ module Marionette
 
       result
     end
-  end # class ErrorHandler
 
-  class OutputHandler
-    def initialize(output)
-        @jsoned = output
+    def deployEnv(host, env)
+      mc = rpcclient "deploop"
+
+      mc.identity_filter host
+      mc.progress = false
+
+      mc.puppet_environment(:env => env)
+
+      mc.disconnect 
     end
-  end # class OutputHandler
+
+    def deployFact(host, fact, value)
+      mc = rpcclient "deploop"
+
+      mc.identity_filter host
+      mc.progress = false
+
+      mc.create_fact(:fact => fact, :value => value)
+
+      mc.disconnect 
+    end
+  end # class MCHandler
 end
 
 

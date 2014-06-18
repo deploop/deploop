@@ -18,7 +18,7 @@
       },
       "dn": [
           { 
-            "hostname":"Amncars004",  
+            "hostname":"mncars004",  
             "entity": ["flume"]  
           },
           { 

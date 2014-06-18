@@ -25,8 +25,7 @@ module Main
 
     def initialize(opt)
       @facts = DeployFacts::FactsDeployer.new opt
-      @errhandle = OutputModule::ErrorHandler.new opt.output
-      @outhandle = OutputModule::OutputHandler.new opt.output
+      @outputHandler = OutputModule::OutputHandler.new opt.output
       @opt = opt
       navigateOptions
     end
@@ -42,7 +41,7 @@ module Main
       #
       if !@opt.json.empty?
         if !File.exist?(@opt.json[0])
-          @errhandle.msg "ERROR: unable open file #{@opt.json}"
+          @outputHandler.msgError "ERROR: unable open file #{@opt.json}"
         end
         if @opt.show
           @facts.createFactsHash @opt.json[0], true

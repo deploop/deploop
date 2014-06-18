@@ -67,7 +67,7 @@ module DeployFacts
       @parsed_obj = nil
 
       @mchandler = Marionette::MCHandler.new 
-      @errhandle = OutputModule::ErrorHandler.new opt.output
+      @outputHandler = OutputModule::OutputHandler.new opt.output
 
       # host = {'mncars001' => 
       #           {deploop_collection:'production', deploop_category:'batch',
@@ -128,10 +128,10 @@ module DeployFacts
               $entities=w['entity']
 
               @host_facts[$hostname] = 
-                { :deploop_collection => collection, 
-                  :deploop_category => category,
-                  :deploop_role => r,
-                  :deploop_entity => $entities }
+                { 'deploop_collection' => collection, 
+                  'deploop_category' => category,
+                  'deploop_role' => r,
+                  'deploop_entity' => $entities }
 
               if show
                 print "#{$hostname}: deploop_collection=#{collection} "
@@ -147,10 +147,10 @@ module DeployFacts
             $entities=@parsed_obj[collection][category][r]["entity"]
 
             @host_facts[$hostname] = 
-                { :deploop_collection => collection, 
-                  :deploop_category => category,
-                  :deploop_role => r,
-                  :deploop_entity => $entities }
+                { 'deploop_collection' => collection, 
+                  'deploop_category' => category,
+                  'deploop_role' => r,
+                  'deploop_entity' => $entities }
 
             if show
               print "#{$hostname}: deploop_collection=#{collection} "
@@ -184,56 +184,60 @@ module DeployFacts
       @opt.deploy.each do |d|
         case d
         when 'batch'
-          deployBatch
+          deployFactsLayer 'batch'
         when 'bus'
-          deployBus
+          deployFactsLayer 'bus'
         when 'speed'
-          deployRealtime
+          deployFactsLayer 'speed'
         when 'serving'
-          deployServing
+          deployFactsLayer 'serving'
         end
       end
-      #@host_facts.each do |f|
-      #  print "Deploying host: " + f[0] + " -> "
-      #  print f[1][:deploop_collection] + " "
-      #  print f[1][:deploop_role] + " "
-      #  puts f[1][:deploop_entity]
-      #end
     end 
 
+    # ==== Summary
+    #
+    # This method exit the cli if any host of the layer
+    # is not Deploop enabled. The program continue before the call if
+    # the hosts are enabled.
+    #
+    # ==== Attributes
+    #
+    # * +layer+ - The cluster layer
+    #
     def checkHosts(layer)
       @host_facts.each do |f|
         if f[1][:deploop_category] == layer
           result = @mchandler.checkIfUp f[0]
-          if !result.empty?
-            msg = "#{f[0]} is Deploop enabled"
-            @outhandle.msg msg
-          else
-            msg = "ERROR: #{f[0]} not Deploop enabled, fix this in ordder to continue"
-            @errhandle.msg msg
+          if result.empty?
+            msg = "ERROR: host \'#{f[0]}\' is not Deploop enabled, fix this"
+            @outputHandler.msgError msg
+          end
+        end
+      end
+      msg = "The layer \'#{layer}\' has all host Deploop enabled"
+      @outputHandler.msgOutput msg
+    end
+    
+    def deployFactsLayer(layer)
+      deploop_facts = ['deploop_collection',
+                      'deploop_category',
+                      'deploop_role',
+                      'deploop_entity']
+      checkHosts layer
+      @host_facts.each do |f|
+        if f[1]['deploop_category'] == layer
+          @mchandler.deployEnv f[0], f[1]['deploop_collection']
+          deploop_facts.each do |d|
+            # FIXME: entity compuesta falla
+            @mchandler.deployFact f[0], d, f[1][d]
           end
         end
       end
     end
-    
-    def deployBatch
-      checkHosts 'batch'
-    end
 
-    def deployBus
-      checkHosts 'bus'
-    end
-
-    def deployRealtime
-      checkHosts 'speed'
-    end
-
-    def deployServing
-      checkHosts 'serving'
-    end
-
-
-
-  end # class FactsDeployer
+  end
 end
+
+
 
