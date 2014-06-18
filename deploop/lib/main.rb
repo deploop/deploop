@@ -24,7 +24,7 @@ module Main
   class MainLogic
 
     def initialize(opt)
-      @facts = DeployFacts::FactsDeployer.new
+      @facts = DeployFacts::FactsDeployer.new opt
       @errhandle = OutputModule::ErrorHandler.new opt.output
       @opt = opt
       navigateOptions
@@ -36,7 +36,7 @@ module Main
       end
 
       #
-      # With jron file you can check the integrity
+      # With a JSON file you can check the integrity
       # or deploy the cluster.
       #
       if !@opt.json.empty?
@@ -45,21 +45,20 @@ module Main
           exit
         end
         if @opt.show
-          @facts.createFactsHash(@opt.json[0], true)
+          @facts.createFactsHash @opt.json[0], true
           exit
         end
         # integrity checking
         if @opt.check
-          @facts.checkJSON(@opt.json[0])
+          @facts.checkJSON @opt.json[0]
           exit
         end
         # cluster deployment
         if @opt.deploy
-          @facts.createFactsHash(@opt.json[0], false)
+          @facts.createFactsHash @opt.json[0], false
         else
           puts "you have to put more options"
         end
-        
       end
     end
   end # class MainLogic

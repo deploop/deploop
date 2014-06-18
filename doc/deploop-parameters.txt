@@ -1,0 +1,29 @@
+Usage: deploop [options]
+
+    -j, --json                       
+    
+    Deploop output formating in JSON. This flag is used when we use deploop
+    cli from another program. Take a look at test folder for an example.
+
+
+    -f, --file CLUSTER_SCHEMA        Require the JSON file describing your cluster for deploy
+        --check                      Check JSON file consistency
+        --show                       Show facts in JSON cluster schema
+        --deploy batch,speed,bus     Example 'list' of arguments
+
+    The first deployment of a cluster is drove by JSON cluster schema. We can
+    make operations over this JSON cluster schema. For example:
+
+    --check  Check the JSON syntax.
+    --show   Show the cluster in terms of facts.
+    --deploy This is the real deployment of the cluster. We can deploy by
+    categorires: the batch layer, the speed layer, the bus layer or the
+    serving layer.
+
+    -c, --fact HOSTNAME              Example 'list' of arguments
+    -v, --[no-]verbose               Run verbosely
+    -t, --test                       Run error or output test
+
+Common options:
+    -h, --help                       Show this message
+        --version                    Show version

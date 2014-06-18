@@ -48,11 +48,11 @@
           }
       ]
     },
-    "realtime": 
+    "speed": 
     {
       "name": "storm",
       "master": {
-         "hostname": "mncars007",  
+         "hostname": "mncars010",  
          "entity": ["flume"]  
        },
       "worker": [

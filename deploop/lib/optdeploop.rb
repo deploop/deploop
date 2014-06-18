@@ -66,8 +66,13 @@ module OptionsParser
         end
 
         # List of arguments.
-        opts.on("--deploy batch,speed,bus", Array, "Example 'list' of arguments") do |deploy|
+        opts.on("--deploy batch,speed,bus,serving", Array, "Deploy a cluster layer") do |deploy|
           options.deploy = deploy
+        end
+
+        # List of arguments.
+        opts.on("-c", "--fact HOSTNAME", Array, "Example 'list' of arguments") do |fact|
+          options.fact = fact
         end
 
         # Boolean switch.

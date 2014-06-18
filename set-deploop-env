@@ -1,0 +1,40 @@
+#!/bin/sh 
+# Deploop Environment Setup Script
+#
+# Copyright (C) 2014 Javi Roman <javiroman@kernel-labs.org>
+#
+#  Licensed to the Apache Software Foundation (ASF) under one or more
+#  contributor license agreements.  See the NOTICE file distributed with
+#  this work for additional information regarding copyright ownership.
+#  The ASF licenses this file to You under the Apache License, Version 2.0
+#  (the "License"); you may not use this file except in compliance with
+#  the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+# Call as '. ./set-deploop-env' or 'source set-deploop-env'
+#
+if [ -z "$ZSH_NAME" ] && [ "x$0" = "x./set-buildoop-env" ]; then
+   echo "Error: This script needs to be sourced. Please run as '. ./set-buildoop-env'"
+   return 1
+else
+   if [ -n "$BASH_SOURCE" ]; then
+      DPROOT="`dirname $BASH_SOURCE`"
+   elif [ -n "$ZSH_NAME" ]; then
+      DPROOT="`dirname $0`"
+   else
+      DPROOT="`pwd`"
+   fi
+   DPROOT=`readlink -f "$DPROOT"`
+fi
+
+PATH=$PATH:$DPROOT/deploop/bin
+export DPROOT PATH
+
+echo "ready!"

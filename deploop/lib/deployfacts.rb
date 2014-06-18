@@ -53,11 +53,12 @@ module DeployFacts
   #     sum  = four.inject(0) { |mem,i| mem+i } # Sum of rolls
   # 
   class FactsDeployer
-    def initialize
+    def initialize(opt)
+      @opt = opt
       @collections = ['production', 'preproduction', 'test']
-      @categories = ['batch', 'bus', 'realtime', 'serving']
+      @categories = ['batch', 'bus', 'speed', 'serving']
       @roles_batch = ['nn1', 'nn2', 'rm', 'dn']
-      @roles_realtime = ['master', 'worker']
+      @roles_speed = ['master', 'worker']
       @roles_bus = ['worker']
       @roles_serving = ['master', 'worker']
       @parsed_obj = nil
@@ -105,8 +106,8 @@ module DeployFacts
       case category
       when 'batch'
         $roles = @roles_batch
-      when 'realtime'
-        $roles = @roles_realtime
+      when 'speed'
+        $roles = @roles_speed
       when 'bus'
         $roles = @roles_bus
       else
@@ -173,14 +174,52 @@ module DeployFacts
       end
     end
 
-    def deployFacts()
-      @host_facts.each do |f|
-        print "Deploying host: " + f[0] + " -> "
-        print f[1][:deploop_collection] + " "
-        print f[1][:deploop_role] + " "
-        puts f[1][:deploop_entity]
+    def deployFacts
+      @opt.deploy.each do |d|
+        case d
+        when 'batch'
+          deployBatch
+        when 'bus'
+          deployBus
+        when 'speed'
+          deployRealtime
+        when 'serving'
+          deployServing
+        end
       end
+      #@host_facts.each do |f|
+      #  print "Deploying host: " + f[0] + " -> "
+      #  print f[1][:deploop_collection] + " "
+      #  print f[1][:deploop_role] + " "
+      #  puts f[1][:deploop_entity]
+      #end
     end 
+
+    def checkHosts(layer)
+      @host_facts.each do |f|
+        if f[1][:deploop_category] == layer
+          puts "ping " + f[0]
+        end
+      end
+    end
+    
+    def deployBatch
+      checkHosts 'batch'
+    end
+
+    def deployBus
+      checkHosts 'bus'
+    end
+
+    def deployRealtime
+      checkHosts 'speed'
+    end
+
+    def deployServing
+      checkHosts 'serving'
+    end
+
+
 
   end # class FactsDeployer
 end
