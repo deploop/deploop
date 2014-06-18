@@ -18,24 +18,24 @@
 # specific language governing permissions and limitations
 # under the License.
 
-require 'open3'
-require 'json'
+# mco rpc rpcutil agent_inventory -I mncars001 -j
 
-def runCommand(cmd)
-  stdout, stderr, status = Open3.capture3(cmd)
-  stdout
-end
+require "mcollective"
+include MCollective::RPC
+   
+$h = 'mncars001'
+mc = rpcclient "rpcutil"
+mc.agent_filter "deploop"
+mc.fact_filter "hostname=#{$h}"
+mc.progress = false
 
-# command error test
-#cmd = 'deploop -f ../conf/deloy.json -j'
-cmd = 'deploop -f ../../conf/deploy.json --deploy batch -j'
-json = runCommand(cmd)
 
-$err_obj = JSON.parse(json)
-if $err_obj['error']
-  puts "#{$err_obj['why']}"
+result = mc.inventory
+if result
+  #printrpc mc.inventory 
+  puts "#{$h} is Deploop enabled"
 else
-  puts "execution OK"
+  puts "#{$h} is not Deploop enabled"
 end
 
-
+mc.disconnect 

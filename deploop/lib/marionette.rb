@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby
 # vim: autoindent tabstop=2 shiftwidth=2 expandtab softtabstop=2 filetype=ruby
 #
 # Licensed to the Apache Software Foundation (ASF) under one
@@ -18,24 +17,33 @@
 # specific language governing permissions and limitations
 # under the License.
 
-require 'open3'
-require 'json'
+require "mcollective"
+include MCollective::RPC
+   
+module Marionette
+  class MCHandler
+    def initialize
 
-def runCommand(cmd)
-  stdout, stderr, status = Open3.capture3(cmd)
-  stdout
-end
+    end
 
-# command error test
-#cmd = 'deploop -f ../conf/deloy.json -j'
-cmd = 'deploop -f ../../conf/deploy.json --deploy batch -j'
-json = runCommand(cmd)
+    def checkIfUp(host)
+      mc = rpcclient "rpcutil"
+      mc.agent_filter "deploop"
+      mc.fact_filter "hostname=#{host}"
+      mc.progress = false
 
-$err_obj = JSON.parse(json)
-if $err_obj['error']
-  puts "#{$err_obj['why']}"
-else
-  puts "execution OK"
+      result = mc.inventory
+      mc.disconnect 
+
+      result
+    end
+  end # class ErrorHandler
+
+  class OutputHandler
+    def initialize(output)
+        @jsoned = output
+    end
+  end # class OutputHandler
 end
 
 

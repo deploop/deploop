@@ -29,8 +29,9 @@ module OutputModule
         puts JSON.generate jerror
         JSON.generate jerror
       else
-        puts msg
+        puts "\n" + msg
       end
+      exit
     end
   end # class ErrorHandler
 
@@ -38,6 +39,17 @@ module OutputModule
     def initialize(output)
         @jsoned = output
     end
+
+    def msg(msg)
+      if @jsoned
+        #jerror = {:error => true, :why => msg}
+        #puts JSON.generate jerror
+        #JSON.generate jerror
+      else
+        puts "\n" + msg
+      end
+    end
+
   end # class OutputHandler
 end
 

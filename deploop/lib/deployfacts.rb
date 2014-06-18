@@ -33,6 +33,9 @@ require 'rubygems'
 require 'json'
 require 'pp'
 
+require_relative '../lib/marionette'
+require_relative '../lib/outputhandler'
+
 module DeployFacts
   # Multi-sided dice class.  The number of sides is determined
   # in the constructor, or later on by accessing the _sides_
@@ -62,6 +65,9 @@ module DeployFacts
       @roles_bus = ['worker']
       @roles_serving = ['master', 'worker']
       @parsed_obj = nil
+
+      @mchandler = Marionette::MCHandler.new 
+      @errhandle = OutputModule::ErrorHandler.new opt.output
 
       # host = {'mncars001' => 
       #           {deploop_collection:'production', deploop_category:'batch',
@@ -198,7 +204,14 @@ module DeployFacts
     def checkHosts(layer)
       @host_facts.each do |f|
         if f[1][:deploop_category] == layer
-          puts "ping " + f[0]
+          result = @mchandler.checkIfUp f[0]
+          if !result.empty?
+            msg = "#{f[0]} is Deploop enabled"
+            @outhandle.msg msg
+          else
+            msg = "ERROR: #{f[0]} not Deploop enabled, fix this in ordder to continue"
+            @errhandle.msg msg
+          end
         end
       end
     end
