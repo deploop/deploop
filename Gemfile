@@ -6,4 +6,6 @@ gem 'mcollective-client', '2.5.1'
 
 gem 'puppet', '3.6.1'
 
+gem "net-ping"
+
 

@@ -32,6 +32,7 @@
 require 'rubygems'
 require 'json'
 require 'pp'
+require 'net/ping'
 
 require_relative '../lib/marionette'
 require_relative '../lib/outputhandler'
@@ -77,8 +78,7 @@ module DeployFacts
       #            deploop_role:'nn2',deploop_entity:'flume'}, 
       #         }
       #
-      # host['mncars003'] = {:a=>"mierda", :b=>"caca"}
-      
+      # host['mncars003'] = {:a=>"new", :b=>"value"}
       @host_facts = Hash.new
     end
 
@@ -99,6 +99,7 @@ module DeployFacts
     # ==== Examples
     #
     def checkJSON(json)
+      # FIXME: logical check of cluster pending
       jsonObj = File.read(json)
       begin
           @parsed_obj = JSON.parse(jsonObj)
@@ -207,10 +208,14 @@ module DeployFacts
     #
     def checkHosts(layer)
       @host_facts.each do |f|
-        if f[1][:deploop_category] == layer
+        if f[1]['deploop_category'] == layer
+          if !Net::Ping::TCP.new(f[0]).ping?
+            msg = "ERROR: host \'#{f[0]}\' is unreachable. Aboring."
+            @outputHandler.msgError msg
+          end
           result = @mchandler.checkIfUp f[0]
           if result.empty?
-            msg = "ERROR: host \'#{f[0]}\' is not Deploop enabled, fix this"
+            msg = "ERROR: host \'#{f[0]}\' is not Deploop enabled, fix this. Aborting."
             @outputHandler.msgError msg
           end
         end
@@ -229,8 +234,13 @@ module DeployFacts
         if f[1]['deploop_category'] == layer
           @mchandler.deployEnv f[0], f[1]['deploop_collection']
           deploop_facts.each do |d|
-            # FIXME: entity compuesta falla
-            @mchandler.deployFact f[0], d, f[1][d]
+            if d == 'deploop_entity'
+              value = f[1][d].join(" ")
+            else
+              value = f[1][d]
+            end
+            puts f[0] + " " + d.split("_")[1] + " " + value
+            @mchandler.deployFact f[0], d.split("_")[1], value
           end
         end
       end

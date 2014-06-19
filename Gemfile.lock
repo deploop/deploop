@@ -12,6 +12,7 @@ GEM
       json
       stomp
       systemu
+    net-ping (1.7.4)
     puppet (3.6.1)
       facter (> 1.6, < 3)
       hiera (~> 1.0)
@@ -26,4 +27,5 @@ PLATFORMS
 
 DEPENDENCIES
   mcollective-client (= 2.5.1)
+  net-ping
   puppet (= 3.6.1)
