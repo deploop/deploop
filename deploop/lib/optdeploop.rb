@@ -44,7 +44,10 @@ module OptionsParser
 
         # Define the options, and what they do
         
-        # Mandatory argument.
+        #  
+        # JSON cluster operations
+        #
+        
         opts.on("-j", "--json",
                 "Deploop output formating in JSON") do |j|
           options.output = true
@@ -55,7 +58,7 @@ module OptionsParser
           options.json << file
         end
 
-       # Cast 'delay' argument to a Float.
+       # sanity checking the syntax of JSON file
         opts.on("--check", "Check JSON file consistency") do |check|
           options.check = check
         end
@@ -75,6 +78,22 @@ module OptionsParser
           options.fact = fact
         end
 
+        #
+        # Operations around a hostname
+        #
+
+        opts.on("-hn", "--host HOSTNAME", "hostname to handle") do |host|
+          options.host = host
+        end
+
+        opts.on("-s", "--status HOSTNAME", "hostname to handle") do |status|
+          options.status = status
+        end
+
+        #
+        # Generic options.
+        #
+        
         # Boolean switch.
         opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
           options.verbose = v

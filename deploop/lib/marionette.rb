@@ -17,13 +17,19 @@
 # specific language governing permissions and limitations
 # under the License.
 
+require 'net/ping'
 require "mcollective"
+
 include MCollective::RPC
    
 module Marionette
   class MCHandler
     def initialize
 
+    end
+
+    def ifHostUp(host)
+      Net::Ping::TCP.new(host).ping?
     end
 
     def checkIfUp(host)

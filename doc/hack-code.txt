@@ -1,0 +1,31 @@
+Technology involved
+~~~~~~~~~~~~~~~~~~~
+
+- Front end:
+
+Ruby on Rails
+JQuery
+Bootstrap
+JsTree
+
+- Back end (cli):
+
+Puppet 3.6.0 (puppetlabs-release-6-10.noarch)
+MCollective 2.5.1
+Phusion Passenger (mod_passenger-3.0.21)
+
+
+- Code layout:
+
+deploop/
+├── bin
+│   └── deploop ==> cli entry point
+├── lib
+│   ├── deployfacts.rb
+│   ├── main.rb ==> options main controller, functions launcher.
+│   ├── marionette.rb
+│   ├── optdeploop.rb
+│   └── outputhandler.rb
+└── test
+    └── rails_test.rb ==> cli tool testing for Ruby on Rails calls.
+

@@ -32,7 +32,6 @@
 require 'rubygems'
 require 'json'
 require 'pp'
-require 'net/ping'
 
 require_relative '../lib/marionette'
 require_relative '../lib/outputhandler'
@@ -209,7 +208,7 @@ module DeployFacts
     def checkHosts(layer)
       @host_facts.each do |f|
         if f[1]['deploop_category'] == layer
-          if !Net::Ping::TCP.new(f[0]).ping?
+          if !@mchandler.ifHostUp f[0]
             msg = "ERROR: host \'#{f[0]}\' is unreachable. Aboring."
             @outputHandler.msgError msg
           end

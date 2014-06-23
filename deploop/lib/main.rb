@@ -55,9 +55,18 @@ module Main
         # cluster deployment
         if @opt.deploy
           @facts.createFactsHash @opt.json[0], false
+          exit
         else
           puts "you have to put more options"
         end
+      end
+
+      #
+      # with --host option you can handle all the 
+      # deploy steps by phase. 
+      #
+      if @opt.host
+        puts "hostname to handle"
       end
     end
   end # class MainLogic
