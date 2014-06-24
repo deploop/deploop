@@ -65,6 +65,20 @@ module Marionette
 
       mc.disconnect 
     end
+
+    def puppetRunBatch(layer, interval)
+      mc = rpcclient "puppet"
+      mc.compound_filter "deploop_category=#{layer}"
+      mc.progress = false
+
+      nodes = mc.discover
+      nodes = mc.discover.sort
+
+      result = mc.runonce(:forcerun => true, :batch_size => interval)
+      puts "schedule status: #{result[0][:statusmsg]}"
+      printrpcstats
+    end
+
   end # class MCHandler
 end
 

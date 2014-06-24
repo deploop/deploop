@@ -78,6 +78,8 @@ module DeployFacts
       #         }
       #
       # host['mncars003'] = {:a=>"new", :b=>"value"}
+      #
+      # The host list with their facts
       @host_facts = Hash.new
     end
 
@@ -108,6 +110,23 @@ module DeployFacts
       end
     end # class FactsDeployer
 
+    # ==== Summary
+    #
+    # This method fill the variable member @host_facts
+    # with the facts per-host. 
+    #
+    # ==== Attributes
+    #
+    # * +collection+ - Production, Preproduction or Test
+    # * +category+ - batch, speed, or bus layer
+    # * +show+ - If true only show the facts per-host
+    #
+    # ==== Returns
+    #  
+    # * +@host_facts+ - Fact list per-host
+    #
+    # ==== Examples
+    #
     def create_facts(collection, category, show)
       case category
       when 'batch'
@@ -184,7 +203,13 @@ module DeployFacts
       @opt.deploy.each do |d|
         case d
         when 'batch'
-          deployFactsLayer 'batch'
+          if !@opt.nofacts
+            deployFactsLayer 'batch'
+          end
+          if !@opt.norun
+            puppetRunBatch 'batch', 2
+          end
+          batchClusterStart
         when 'bus'
           deployFactsLayer 'bus'
         when 'speed'
@@ -243,6 +268,23 @@ module DeployFacts
           end
         end
       end
+    end
+
+    # ==== Summary
+    #
+    # This method execute Puppet runs in batch mode.
+    #
+    # ==== Attributes
+    #
+    # * +layer+ - layer for the inventory
+    # * +interval+ - chunk of hosts in the batch run.
+    #
+    def puppetRunBatch(layer, interval)
+      @mchandler.puppetRunBatch layer, interval
+    end
+
+    def batchClusterStart()
+      puts "bootstrap batch cluster ..."
     end
 
   end

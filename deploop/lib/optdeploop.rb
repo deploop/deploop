@@ -73,6 +73,18 @@ module OptionsParser
           options.deploy = deploy
         end
 
+        opts.on("--nofacts", "skip facts deploying") do |nofacts|
+          options.nofacts = nofacts
+        end
+
+        opts.on("--norun", "skip puppet runs") do |norun|
+          options.norun = norun
+        end
+
+        opts.on("--stop batch,speed,bus,serving", Array, "Stop a cluster layer") do |stop|
+          options.stop = stop
+        end
+
         # List of arguments.
         opts.on("-c", "--fact HOSTNAME", Array, "Example 'list' of arguments") do |fact|
           options.fact = fact
@@ -82,7 +94,7 @@ module OptionsParser
         # Operations around a hostname
         #
 
-        opts.on("-hn", "--host HOSTNAME", "hostname to handle") do |host|
+        opts.on("-h", "--host HOSTNAME", "hostname to handle") do |host|
           options.host = host
         end
 
