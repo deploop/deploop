@@ -5,28 +5,32 @@
     "batch": 
     {
       "nn1": {
-        "hostname": "mncars001",
+        "hostname": "openbus-nn1",
         "entity": ["flume", "monit"]
       },
       "nn2": {
-        "hostname": "mncars002",
+        "hostname": "openbus-nn1",
         "entity": ["flume", "monit"]
       },
       "rm": {
-        "hostname": "mncars003",
+        "hostname": "openbus-rm",
         "entity": ["flume", "monit"]
       },
       "dn": [
           { 
-            "hostname":"mncars004",  
+            "hostname":"openbus-dn1",  
             "entity": ["flume"]  
           },
           { 
-            "hostname":"mncars005",  
+            "hostname":"openbus-dn2",  
             "entity": ["flume"]  
           },
           { 
-            "hostname":"mncars006",  
+            "hostname":"openbus-dn3",  
+            "entity": ["flume"]  
+          },
+	  { 
+            "hostname":"openbus-dn4",  
             "entity": ["flume"]  
           }
       ]
@@ -35,15 +39,15 @@
     {
       "worker": [
           { 
-            "hostname":"mncars007",  
+            "hostname":"bus-01",  
             "entity": ["flume"]  
           },
           { 
-            "hostname":"mncars008",  
+            "hostname":"bus-02",  
             "entity": ["flume"]  
           },
           { 
-            "hostname":"mncars009",  
+            "hostname":"bus-03",  
             "entity": ["flume"]  
           }
       ]
@@ -52,16 +56,16 @@
     {
       "name": "storm",
       "master": {
-         "hostname": "mncars010",  
+         "hostname": "speed-01",  
          "entity": ["flume"]  
        },
       "worker": [
           { 
-            "hostname":"mncars011",  
+            "hostname":"speed-02",  
             "entity": ["flume"]  
           },
           { 
-            "hostname":"mncars012",  
+            "hostname":"speed-03",  
             "entity": ["flume"]  
           }
       ]
@@ -70,16 +74,16 @@
     {
       "name": "cassandra",
       "master": {
-        "hostname": "mncars013",  
+        "hostname": "serving-01",  
         "entity": ["flume"] 
       },
       "worker": [
           { 
-            "hostname":"mncars014",  
+            "hostname":"serving-02",  
             "entity": ["flume"]  
           },
           { 
-            "hostname":"mncars015",  
+            "hostname":"serving-03",  
             "entity": ["flume"]  
           }
       ]
