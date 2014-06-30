@@ -8,12 +8,13 @@ JQuery
 Bootstrap
 JsTree
 
-- Back end (cli):
+- Back end (cli) tested with:
 
-Puppet 3.6.0 (puppetlabs-release-6-10.noarch)
+puppet-server 3.6.1-1 (puppetlabs-release-6-10.noarch)
+puppet 3.6.1-1
+ruby 2.1.1
 MCollective 2.5.1
 Phusion Passenger (mod_passenger-3.0.21)
-
 
 - Code layout:
 

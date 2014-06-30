@@ -61,6 +61,21 @@ module Main
         end
       end
 
+      # 
+      # The start/stop is over a yet deployed
+      # cluster. So the JSON is no important here.
+      # The other option of batchClusterOperate 'bootstrap'
+      # is raised from --deploy parameter. This option
+      # can not be run by the user directly.
+      if @opt.layer
+        if !@opt.operation
+          puts 'you have to put an operation over the layers'
+          exit
+        else
+          @facts.ClusterOperate @opt.layer, @opt.operation
+        end
+      end
+
       #
       # with --host option you can handle all the 
       # deploy steps by phase. 

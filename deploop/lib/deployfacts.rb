@@ -209,7 +209,6 @@ module DeployFacts
           if !@opt.norun
             puppetRunBatch 'batch', 2
           end
-          batchClusterStart
         when 'bus'
           deployFactsLayer 'bus'
         when 'speed'
@@ -283,9 +282,57 @@ module DeployFacts
       @mchandler.puppetRunBatch layer, interval
     end
 
-    def batchClusterStart()
-      puts "bootstrap batch cluster ..."
+    # ==== Summary
+    #
+    # This method run a set of operation over a Layers
+    # cluster set.
+    #
+    # ==== Attributes
+    #
+    # * +layer+ - The list of cluster layer over operate
+    # * +operation+ - The operation 'start', 'stop' or 'bootstrap'
+    #
+    def ClusterOperate(layers, operation)
+      layers.each do |d|
+        case d
+        when 'batch'
+          batchClusterOperate operation
+        when 'bus'
+          puts "bus layer #{operation}"
+        when 'speed'
+          puts "speed layer #{operation}"
+        when 'serving'
+          puts "serving layer #{operation}"
+        end
+      end
     end
+
+    # ==== Summary
+    #
+    # This method run a set of operation over the Batch Layer
+    # cluster.
+    #
+    # ==== Attributes
+    #
+    # * +operation+ - The operation 'start', 'stop' or 'bootstrap'
+    #
+    def batchClusterOperate(operation)
+      @mchandler.handleBatchLayer(operation)
+    end
+
+    # ==== Summary
+    #
+    # This method run a set of operation over the Bus Layer
+    # cluster.
+    #
+    # ==== Attributes
+    #
+    # * +operation+ - The operation 'start', 'stop' or 'bootstrap'
+    #
+    def busClusterOperate(operation)
+      puts operation
+    end
+
 
   end
 end

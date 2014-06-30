@@ -79,6 +79,39 @@ module Marionette
       printrpcstats
     end
 
+    def handleBatchLayer(operation)
+        worker_services = ['hadoop-hdfs-datanode', 'hadoop-yarn-nodemanager']
+        manager_1st_services = ['hadoop-hdfs-zkfc', 'hadoop-hdfs-jornalnode', 
+          'zookeeper-server']
+        nn_services = ['hadoop-hdfs-namenode']
+        rm_services = ['hadoop-yarn-resourcemanager', 'mapreduce-historyserver']
+
+        # discover worker node collection
+        mcService = rpcclient "service"
+        mcService.compound_filter 'deploop_category=batch and deploop_role=dn'
+        mcService.progress = false
+        nodes = mcService.discover
+        nodes = mcService.discover.sort
+
+        nodes.each do |n| 
+          mcFact = rpcclient 'rpcutil'
+          mcFact.fact_filter "hostname=#{n}"
+          mcFact.progress = false
+
+          worker_services.each do |service|
+            if operation == 'start'
+              puts "starting #{service} in #{n}"
+              res = mcService.start(:service => service)
+            else
+              puts "stopping #{service} in #{n}"
+              res = mcService.stop(:service => service)
+            end
+          end
+          mcFact.disconnect
+        end
+
+    end
+
   end # class MCHandler
 end
 

@@ -81,8 +81,16 @@ module OptionsParser
           options.norun = norun
         end
 
-        opts.on("--stop batch,speed,bus,serving", Array, "Stop a cluster layer") do |stop|
-          options.stop = stop
+        opts.on("--layer batch,speed,bus,serving", Array, "Define cluster for operation") do |layer|
+          options.layer = layer
+        end
+
+        opts.on("--start", "Start a cluster layer") do |operation|
+          options.operation = 'start'
+        end
+
+        opts.on("--stop", "Stop a cluster layer") do |operation|
+          options.operation = 'stop'
         end
 
         # List of arguments.
