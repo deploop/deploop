@@ -195,11 +195,12 @@ module DeployFacts
         end
       end
       if !show
-        deployFacts
+        deployClusters
       end
     end
 
-    def deployFacts
+    def deployClusters
+      # for each layer in --deploy parameter.
       @opt.deploy.each do |d|
         case d
         when 'batch'
@@ -209,12 +210,31 @@ module DeployFacts
           if !@opt.norun
             puppetRunBatch 'batch', 2
           end
+          @mchandler.handleBatchLayer 'bootstrap'
         when 'bus'
-          deployFactsLayer 'bus'
+          if !@opt.nofacts
+            deployFactsLayer 'bus'
+          end
+          if !@opt.norun
+            puppetRunBatch 'bus', 2
+          end
+          @mchandler.handleBusLayer 'bootstrap'
         when 'speed'
-          deployFactsLayer 'speed'
+          if !@opt.nofacts
+            deployFactsLayer 'speed'
+          end
+          if !@opt.norun
+            puppetRunBatch 'speed', 2
+          end
+          @mchandler.handleSpeedLayer 'bootstrap'
         when 'serving'
-          deployFactsLayer 'serving'
+          if !@opt.nofacts
+            deployFactsLayer 'serving'
+          end
+          if !@opt.norun
+            puppetRunBatch 'serving', 2
+          end
+          @mchandler.handleServingLayer 'bootstrap'
         end
       end
     end 
@@ -293,58 +313,6 @@ module DeployFacts
       end
       @mchandler.puppetRunBatch layer, interval
     end
-
-    # ==== Summary
-    #
-    # This method run a set of operation over a Layers
-    # cluster set.
-    #
-    # ==== Attributes
-    #
-    # * +layer+ - The list of cluster layer over operate
-    # * +operation+ - The operation 'start', 'stop' or 'bootstrap'
-    #
-    def ClusterOperate(layers, operation)
-      layers.each do |d|
-        case d
-        when 'batch'
-          batchClusterOperate operation
-        when 'bus'
-          puts "bus layer #{operation}"
-        when 'speed'
-          puts "speed layer #{operation}"
-        when 'serving'
-          puts "serving layer #{operation}"
-        end
-      end
-    end
-
-    # ==== Summary
-    #
-    # This method run a set of operation over the Batch Layer
-    # cluster.
-    #
-    # ==== Attributes
-    #
-    # * +operation+ - The operation 'start', 'stop' or 'bootstrap'
-    #
-    def batchClusterOperate(operation)
-      @mchandler.handleBatchLayer(operation)
-    end
-
-    # ==== Summary
-    #
-    # This method run a set of operation over the Bus Layer
-    # cluster.
-    #
-    # ==== Attributes
-    #
-    # * +operation+ - The operation 'start', 'stop' or 'bootstrap'
-    #
-    def busClusterOperate(operation)
-      puts operation
-    end
-
 
   end
 end
