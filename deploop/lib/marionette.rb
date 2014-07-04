@@ -32,16 +32,15 @@ module Marionette
       Net::Ping::TCP.new(host).ping?
     end
 
-    def checkIfUp(host)
+    def checkIfDeploopHost(host)
       mc = rpcclient "rpcutil"
-      mc.agent_filter "deploop"
-      mc.fact_filter "hostname=#{host}"
+      mc.identity_filter "#{host}"
       mc.progress = false
 
       result = mc.inventory
       mc.disconnect 
 
-      result
+      result[0][:data][:agents].include? 'deploop'
     end
 
     def deployEnv(host, env)

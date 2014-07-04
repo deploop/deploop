@@ -9,7 +9,7 @@
         "entity": ["flume", "monit"]
       },
       "nn2": {
-        "hostname": "openbus-nn1",
+        "hostname": "openbus-nn2",
         "entity": ["flume", "monit"]
       },
       "rm": {

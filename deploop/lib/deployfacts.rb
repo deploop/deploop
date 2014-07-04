@@ -222,8 +222,8 @@ module DeployFacts
     # ==== Summary
     #
     # This method exit the cli if any host of the layer
-    # is not Deploop enabled. The program continue before the call if
-    # the hosts are enabled.
+    # is not Deploop enabled. The program continue after the call if
+    # all the hosts are enabled.
     #
     # ==== Attributes
     #
@@ -232,12 +232,21 @@ module DeployFacts
     def checkHosts(layer)
       @host_facts.each do |f|
         if f[1]['deploop_category'] == layer
-          if !@mchandler.ifHostUp f[0]
+          up = @mchandler.ifHostUp f[0]
+          if @opt.verbose
+            puts "checking host #{f[0]} is up: "  
+            puts up
+          end
+          if !up
             msg = "ERROR: host \'#{f[0]}\' is unreachable. Aboring."
             @outputHandler.msgError msg
           end
-          result = @mchandler.checkIfUp f[0]
-          if result.empty?
+          deplUp = @mchandler.checkIfDeploopHost f[0]
+          if @opt.verbose
+            puts "checking Deploop enabled host #{f[0]}: "  
+            puts deplUp
+          end
+          if !deplUp
             msg = "ERROR: host \'#{f[0]}\' is not Deploop enabled, fix this. Aborting."
             @outputHandler.msgError msg
           end
@@ -279,6 +288,9 @@ module DeployFacts
     # * +interval+ - chunk of hosts in the batch run.
     #
     def puppetRunBatch(layer, interval)
+      if @opt.verbose
+        puts "puppet run for layer: #{layer}"
+      end
       @mchandler.puppetRunBatch layer, interval
     end
 

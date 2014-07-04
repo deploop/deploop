@@ -8,7 +8,7 @@ GEM
       json_pure
     json (1.8.1)
     json_pure (1.8.1)
-    mcollective-client (2.5.1)
+    mcollective-client (2.5.2)
       json
       stomp
       systemu
@@ -26,6 +26,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  mcollective-client (= 2.5.1)
+  mcollective-client (= 2.5.2)
   net-ping
   puppet (= 3.6.1)

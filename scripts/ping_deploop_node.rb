@@ -22,20 +22,13 @@
 
 require "mcollective"
 include MCollective::RPC
-   
-$h = 'mncars001'
+
+$h = 'openbus-nn1'
 mc = rpcclient "rpcutil"
-mc.agent_filter "deploop"
-mc.fact_filter "hostname=#{$h}"
+mc.identity_filter "#{$h}"
 mc.progress = false
 
-
 result = mc.inventory
-if result
-  #printrpc mc.inventory 
-  puts "#{$h} is Deploop enabled"
-else
-  puts "#{$h} is not Deploop enabled"
-end
+puts result[0][:data][:agents].include? 'deploop'
 
 mc.disconnect 

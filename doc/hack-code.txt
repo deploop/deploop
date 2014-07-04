@@ -16,6 +16,12 @@ ruby 2.1.1
 MCollective 2.5.1
 Phusion Passenger (mod_passenger-3.0.21)
 
+
+puppet-server-3.6.2-1
+puppet-3.6.2-1
+MCollective 2.5.2
+
+
 - Code layout:
 
 deploop/
