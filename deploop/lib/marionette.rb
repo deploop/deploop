@@ -25,7 +25,8 @@ include MCollective::RPC
 module Marionette
   class MCHandler
     def initialize
-
+      #FIXME: set the environment this way is dirty.
+      @cmdenv = 'source /etc/profile.d/java.sh && '
     end
 
     # ==== Summary
@@ -157,7 +158,7 @@ module Marionette
     def handleBatchLayer(operation)
         case operation
         when 'bootstrap'
-          puts 'bootstrap batch layer'
+          batchLayerBootStrapping
         when 'start'
           puts 'starting batch layer'
         when 'stop'
@@ -278,14 +279,177 @@ module Marionette
         end
     end
 
-    def executeAction(host, cmd)
+    # ==== Summary
+    #
+    # Complex method for make the BootStrap phase
+    # of Hadoop cluster. The bootstrapping phases are:
+    #
+    # 1. Zookeeper Esemble bootstrappping.
+    # 2. Zookeeper Esemble Znode formating.
+    # 3. QJM - Quorum Journal Manager startup.
+    # 4. HDFS format initialization
+    #
+    # ==== Attributes
+    #
+    def batchLayerBootStrapping
+      # discovering the node managers.
+      mc = rpcclient "rpcutil"
+      mc.compound_filter 'deploop_role=nn1 or deploop_role=nn2 or deploop_role=rm'
+      node_managers = mc.discover
+      
+      # the workers list
+      mc.reset_filter
+      mc.compound_filter 'deploop_role=dn'
+      node_workers = mc.discover
+
+      # storing nodemanagers one by one
+      mc.reset_filter
+      mc.compound_filter 'deploop_role=nn1'
+      node = mc.discover
+      nn1 = node[0]
+
+      mc.reset_filter
+      mc.compound_filter 'deploop_role=nn2'
+      node = mc.discover
+      nn2 = node[0]
+
+      mc.reset_filter
+      mc.compound_filter 'deploop_role=rm'
+      node = mc.discover
+      rm = node[0]
+      mc.disconnect
+
+      #
+      # 1. Zookeeper bootstrap
+      #
+
+      # staring the Zookeeper Esemble.
+      node_managers.each do |h|
+        mcServiceAction h, 'zookeeper-server', 'start'
+      end
+
+      #
+      # 2. Zookeeper znode formating for Automatic Failover.
+      #
+
+      # Warning FORMAT:
+      ###cmd = @cmdenv + 'sudo -E -u hdfs hdfs zkfc -formatZK -force'
+      ###dpExecuteAction nn1, cmd
+
+      #
+      # 3. QJM - Quorum Journal Manager startup.
+      #
+      
+      # staring QJM
+      puts "starting QJM ...."
+      node_managers.each do |h|
+        mcServiceAction h, 'hadoop-hdfs-journalnode', 'start'
+      end
+
+      #
+      # 4. HDFS format initialization
+      #
+
+      # Warning FORMAT:
+      ####cmd = @cmdenv + 'sudo -E -u hdfs hdfs namenode -format -force'
+      ####dpExecuteAction nn1, cmd
+
+      # 
+      # 5. Namenodes startup
+      #
+
+      mcServiceAction nn1, 'hadoop-hdfs-namenode', 'start'
+      # Warning FORMAT:
+      ####cmd = @cmdenv + 'sudo -E -u hdfs hdfs namenode -bootstrapStandby'
+      ####dpExecuteAction nn2, cmd
+      mcServiceAction nn2, 'hadoop-hdfs-namenode', 'start'
+
+      # 
+      # 6. Check HA
+      #
+
+      cmd = @cmdenv + 'sudo -E -u hdfs hdfs haadmin -getServiceState nn1'
+      dpExecuteAction nn1, cmd
+      cmd = @cmdenv + 'sudo -E -u hdfs hdfs haadmin -getServiceState nn2'
+      dpExecuteAction nn1, cmd
+
+      #
+      # 7. Automatic Failover startup
+      #
+
+      mcServiceAction nn1, 'hadoop-hdfs-zkfc', 'start'
+      mcServiceAction nn2, 'hadoop-hdfs-zkfc', 'start'
+
+      #
+      # 8. Workers startup 
+      #
+      puts "starting DataNode workers...."
+      node_workers.each do |h|
+        mcServiceAction h, 'hadoop-hdfs-datanode', 'start'
+      end
+
+
+
+    end
+
+    # ==== Summary
+    #
+    # mcollective-service-agent wrapper. This
+    # method start/stop one service in one host.
+    #
+    # ==== Attributes
+    #
+    # * +host+ - host over to start/stop the service
+    # * +service+ - the service name
+    # * +cmd+ - start/stop.
+    #
+    def mcServiceAction(host, service, cmd)
+      mc = rpcclient "service"
+      mc.identity_filter "#{host}"
+      mc.progress = false
+      if cmd == 'start'
+        res = mc.start(:service => service)
+      else
+        res = mc.stop(:service => service)
+      end
+      mc.disconnect
+    end 
+
+    # ==== Summary
+    #
+    # mcollective-deploop-agent wrapper for
+    # 'execute' free command action.
+    #
+    # ==== Attributes
+    #
+    # * +host+ - host over to execute the command.
+    # * +cmd+ - free command to execute in host.
+    #
+    def dpExecuteAction(host, cmd)
       mc = rpcclient "deploop"
-      mc.identity_filter "#{$h}"
+      mc.identity_filter "#{host}"
       mc.progress = false
 
-      result = mc.execute(:cmd=> $cmd)
+      result = mc.execute(:cmd=> cmd)
+
+      mc.disconnect
+
+      result[0][:data].each do |a|
+        puts a
+      end
 
       result[0][:data][:exitcode]
+    end
+
+    def printTopology
+      mc = rpcclient "rpcutil"
+      mc.compound_filter 'deploop_role=nn1'
+      node = mc.discover
+      mc.disconnect
+
+      cmd = @cmdenv + 'sudo -E -u hdfs hdfs dfsadmin -printTopology'
+
+      dpExecuteAction node[0], cmd
     end
 
   end # class MCHandler

@@ -23,7 +23,9 @@
 require "mcollective"
 include MCollective::RPC
 
-$cmd='ls -l'
+#$cmd='ls -l'
+cmdenv = 'source /etc/profile.d/java.sh && '
+$cmd = cmdenv + 'sudo -E -u hdfs hdfs zkfc -formatZK -force'
 
 $h = 'openbus-nn1'
 mc = rpcclient "deploop"

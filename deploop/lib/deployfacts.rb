@@ -17,11 +17,11 @@
 # specific language governing permissions and limitations
 # under the License.
 
+
+
 # == deployfacts.rb
 #
-# This file contains the Dice class definition and it runs
-# some simple test code on a 16 sided dice.  A 20 dice
-# roll fight again the COMPUTER who always rolls 10s!
+# This module has the main class for cluster deployments.
 #
 # == Contact
 #
@@ -199,6 +199,22 @@ module DeployFacts
       end
     end
 
+    # ==== Summary
+    #
+    # This is the real method where de deploy magic
+    # is done. In this method a main loop go over the
+    # layers passed by the user and execute the steps:
+    #
+    # 1. deployFactsLayer [batch, speed, serving or bus]
+    # 2. puppetRunBatch [batch, speed, serving or bus]
+    # 3. handleBatchLayer or handleSpeedLayer ...
+    #
+    # ==== Attributes
+    #
+    # ==== Returns
+    #
+    # ==== Examples
+    #
     def deployClusters
       # for each layer in --deploy parameter.
       @opt.deploy.each do |d|
@@ -208,7 +224,7 @@ module DeployFacts
             deployFactsLayer 'batch'
           end
           if !@opt.norun
-            puppetRunBatch 'batch', 2
+            @mchandler.puppetRunBatch 'batch', 2
           end
           @mchandler.handleBatchLayer 'bootstrap'
         when 'bus'
@@ -216,7 +232,7 @@ module DeployFacts
             deployFactsLayer 'bus'
           end
           if !@opt.norun
-            puppetRunBatch 'bus', 2
+            @mchandler.puppetRunBatch 'bus', 2
           end
           @mchandler.handleBusLayer 'bootstrap'
         when 'speed'
@@ -224,7 +240,7 @@ module DeployFacts
             deployFactsLayer 'speed'
           end
           if !@opt.norun
-            puppetRunBatch 'speed', 2
+            @mchandler.puppetRunBatch 'speed', 2
           end
           @mchandler.handleSpeedLayer 'bootstrap'
         when 'serving'
@@ -232,7 +248,7 @@ module DeployFacts
             deployFactsLayer 'serving'
           end
           if !@opt.norun
-            puppetRunBatch 'serving', 2
+            @mchandler.puppetRunBatch 'serving', 2
           end
           @mchandler.handleServingLayer 'bootstrap'
         end
@@ -298,22 +314,9 @@ module DeployFacts
       end
     end
 
-    # ==== Summary
-    #
-    # This method execute Puppet runs in batch mode.
-    #
-    # ==== Attributes
-    #
-    # * +layer+ - layer for the inventory
-    # * +interval+ - chunk of hosts in the batch run.
-    #
-    def puppetRunBatch(layer, interval)
-      if @opt.verbose
-        puts "puppet run for layer: #{layer}"
-      end
-      @mchandler.puppetRunBatch layer, interval
+    def printTopology
+      @mchandler.printTopology
     end
-
   end
 end
 

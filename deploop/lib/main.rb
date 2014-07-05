@@ -24,9 +24,16 @@ module Main
   class MainLogic
 
     def initialize(opt)
+      # this is the main module for cluster deployment.
       @facts = DeployFacts::FactsDeployer.new opt
+
+      # stdout, stderr handler for Ruby on Rails or cli calls.
       @outputHandler = OutputModule::OutputHandler.new opt.output
+
+      # cli parameters.
       @opt = opt
+
+      # main method for Opt navigation.
       navigateOptions
     end
 
@@ -36,8 +43,13 @@ module Main
       end
 
       #
-      # With a JSON file you can check the integrity
-      # or deploy the cluster.
+      # Code realted with CLI parameter -f JSON.file.
+      # This option is used for the full deploy of a new
+      # cluster:
+      #
+      # 1. Deploy the Deploop facts.
+      # 2. Execute the puppet runs over the cluster.
+      # 3. BootStrap the cluster.
       #
       if !@opt.json.empty?
         if !File.exist?(@opt.json[0])
@@ -82,6 +94,10 @@ module Main
       #
       if @opt.host
         puts "hostname to handle"
+      end
+
+      if @opt.topology
+        @facts.printTopology
       end
     end
   end # class MainLogic

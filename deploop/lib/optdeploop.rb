@@ -93,6 +93,10 @@ module OptionsParser
           options.operation = 'stop'
         end
 
+        opts.on("--topology", "print batch topology") do |topo|
+          options.topology = topo
+        end
+
         # List of arguments.
         opts.on("-c", "--fact HOSTNAME", Array, "Example 'list' of arguments") do |fact|
           options.fact = fact

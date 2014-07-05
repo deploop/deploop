@@ -177,6 +177,8 @@ manager> mco rpc service start service=hadoop-yarn-nodemanager --with-identity m
 manager> mco rpc service start service=hadoop-yarn-nodemanager --with-identity mncars006
 
 
+# Testing 
+manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hdfs dfsadmin -printTopology' --with-identity=mncars001
 manager> mco rpc deploop execute cmd='source /etc/profile.d/java.sh && sudo -E -u hdfs hadoop jar /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-jobclient-2.2.0.jar' --with-identity=mncars001
 
 # KDC server setup
