@@ -1,12 +1,36 @@
 Deploop: The Hadoop Deploy System
 =================================
 
-Work in progress ... coming soon.
+Deploop is a tool for provisioning, managing and monitoring Apache Hadoop 
+clusters focused in the Lambda Architecture. LA is a generic design based 
+on the concepts of Twitter engineer Nathan Marz. This generic architecture 
+was designed addressing common requirements for big data.
+
+Deploop system is based on three software components:
+
+The Deploop engine: a CLI tool for cluster deployment and operation.
+The Deploop Puppet Enviroments Catalog: A set of puppet recipes for configuration management.
+The Deploop Mcollective Agent: An special agent for specific Deploop operations in nodes.
+The Deploop GUI: A graphic user interface for easy deployments.
+
+This project is in heavy development, however you can play with the CLI command,
+and deploy from scratch a full Hadoop cluster (with HA and kerberos) with a simple
+command like this:
+
+deploop -f conf/deploy.json --deploy batch
+
+Shutting down the cluster:
+
+deploop --layer batch --stop
+
+Start up the cluster:
+
+deploop --layer batch --start
 
 Project info
 ------------
 
-More info in doc folder.
+http://deploop.github.io/
 
 
 Pull request flow

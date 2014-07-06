@@ -478,7 +478,13 @@ module Marionette
       mcServiceAction nn1, 'hadoop-hdfs-zkfc', 'start'
       mcServiceAction nn2, 'hadoop-hdfs-zkfc', 'start'
 
-      # 5. start the workers.
+      #
+      # 5. History Server.
+      #
+      puts "Hisotry server starting up ..."
+      mcServiceAction rm, 'hadoop-mapreduce-historyserver', 'start'
+
+      # 6. start the workers.
       puts "starting up DataNode workers...."
       node_workers.each do |h|
         mcServiceAction h, 'hadoop-hdfs-datanode', 'start'
@@ -524,6 +530,12 @@ module Marionette
       mcServiceAction nn1, 'hadoop-hdfs-namenode', 'stop'
       mcServiceAction nn2, 'hadoop-hdfs-namenode', 'stop'
       mcServiceAction rm, 'hadoop-yarn-resourcemanager', 'stop'
+
+      #
+      # 6. History Server.
+      #
+      puts "shutting down Hisotry server ..."
+      mcServiceAction rm, 'hadoop-mapreduce-historyserver', 'stop'
     end
 
     # ==== Summary
