@@ -81,6 +81,10 @@ module OptionsParser
           options.norun = norun
         end
 
+        opts.on("--onlyrun", "skip puppet runs") do |onlyrun|
+          options.onlyrun = onlyrun
+        end
+
         opts.on("--layer batch,speed,bus,serving", Array, "Define cluster for operation") do |layer|
           options.layer = layer
         end
@@ -95,6 +99,10 @@ module OptionsParser
 
         opts.on("--topology", "print batch topology") do |topo|
           options.topology = topo
+        end
+
+        opts.on("--report", "print batch topology") do |report|
+          options.report = report
         end
 
         # List of arguments.

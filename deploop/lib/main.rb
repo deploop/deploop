@@ -42,7 +42,7 @@ module Main
           puts @opt
       end
 
-      #
+      
       # Code realted with CLI parameter -f JSON.file.
       # This option is used for the full deploy of a new
       # cluster:
@@ -50,6 +50,11 @@ module Main
       # 1. Deploy the Deploop facts.
       # 2. Execute the puppet runs over the cluster.
       # 3. BootStrap the cluster.
+      #
+      # Example of CLI call:
+      #
+      #   deploop -f cluster.json --deploy batch,bus
+      #   deploop -f cluster.json --deploy batch --nofacts --norun
       #
       if !@opt.json.empty?
         if !File.exist?(@opt.json[0])
@@ -73,18 +78,25 @@ module Main
         end
       end
 
+       
+      # with --layer parameter you can start/stop
+      # a whole layer (cluster). The start/stop is 
+      # over a yet deployed  cluster. So the JSON 
+      # is no important here.
+      #
+      # Example of CLI call:
       # 
-      # The start/stop is over a yet deployed
-      # cluster. So the JSON is no important here.
-      # The other option of batchClusterOperate 'bootstrap'
-      # is raised from --deploy parameter. This option
-      # can not be run by the user directly.
+      # deploop --layer batch --stop
+      # deploop --layer batch,speed --start
+      #
       if @opt.layer
         if !@opt.operation
-          puts 'you have to put an operation over the layers'
+          puts 'ERROR: you have to put an operation over the layers (start, stop)'
+          puts 'example: deploop --layer batch --stop'
           exit
         else
-          @facts.ClusterOperate @opt.layer, @opt.operation
+          # you run an action (start/stop) over a cluster (layer).
+          @facts.layerRunAction @opt.layer, @opt.operation
         end
       end
 
@@ -99,6 +111,11 @@ module Main
       if @opt.topology
         @facts.printTopology
       end
+
+      if @opt.report
+        @facts.printReport
+      end
+
     end
   end # class MainLogic
 end

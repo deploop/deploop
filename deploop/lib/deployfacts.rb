@@ -226,7 +226,9 @@ module DeployFacts
           if !@opt.norun
             @mchandler.puppetRunBatch 'batch', 2
           end
-          @mchandler.handleBatchLayer 'bootstrap'
+          if !@opt.onlyrun
+            @mchandler.handleBatchLayer 'bootstrap'
+          end
         when 'bus'
           if !@opt.nofacts
             deployFactsLayer 'bus'
@@ -314,9 +316,32 @@ module DeployFacts
       end
     end
 
+    def layerRunAction(layers, action)
+      layers.each do |d|
+        case d
+        when 'batch'
+          @mchandler.handleBatchLayer action
+        when 'bus'
+          @mchandler.handleBusLayer action
+        when 'speed'
+          @mchandler.handleSpeedLayer action
+        when 'serving'
+          @mchandler.handleServingLayer action
+        else
+          puts "ERROR: no exits layer"
+          exit
+        end
+      end
+    end
+
     def printTopology
       @mchandler.printTopology
     end
+
+    def printReport
+      @mchandler.printReport
+    end
+
   end
 end
 

@@ -160,12 +160,13 @@ module Marionette
         when 'bootstrap'
           batchLayerBootStrapping
         when 'start'
-          puts 'starting batch layer'
+          batchLayerStart
         when 'stop'
-          puts 'stopping batch layer'
+          batchLayerStop
         else
           puts "ERROR"
         end
+    end
 
 #        worker_services = ['hadoop-hdfs-datanode', 'hadoop-yarn-nodemanager']
 #        manager_1st_services = ['hadoop-hdfs-zkfc', 'hadoop-hdfs-jornalnode', 
@@ -196,7 +197,6 @@ module Marionette
 #          end
 #          mcFact.disconnect
 #        end
-    end
 
     # ==== Summary
     #
@@ -279,19 +279,7 @@ module Marionette
         end
     end
 
-    # ==== Summary
-    #
-    # Complex method for make the BootStrap phase
-    # of Hadoop cluster. The bootstrapping phases are:
-    #
-    # 1. Zookeeper Esemble bootstrappping.
-    # 2. Zookeeper Esemble Znode formating.
-    # 3. QJM - Quorum Journal Manager startup.
-    # 4. HDFS format initialization
-    #
-    # ==== Attributes
-    #
-    def batchLayerBootStrapping
+    def getClusterHosts
       # discovering the node managers.
       mc = rpcclient "rpcutil"
       mc.compound_filter 'deploop_role=nn1 or deploop_role=nn2 or deploop_role=rm'
@@ -319,11 +307,36 @@ module Marionette
       rm = node[0]
       mc.disconnect
 
+      return node_managers, node_workers, nn1, nn2, rm
+    end
+
+
+    # ==== Summary
+    #
+    # Complex method for make the BootStrap phase
+    # of Hadoop cluster. The bootstrapping phases are:
+    #
+    # 1. Zookeeper Esemble bootstrappping.
+    # 2. Zookeeper Esemble Znode formating.
+    # 3. QJM - Quorum Journal Manager startup.
+    # 4. HDFS format initialization.
+    # 5. Namenodes startup.
+    # 6. HA checking for error sanity control.
+    # 7. Automatic Failover startup (Zkfc).
+    # 8. Workers node startup.
+    # 9. Minimal HDFS folders layout creation.
+    #
+    # ==== Attributes
+    #
+    def batchLayerBootStrapping
+      node_managers, node_workers, nn1, nn2, rm = getClusterHosts
+
+      puts "Batch Layer (Hadoop) Bootstrap ..."
+
       #
       # 1. Zookeeper bootstrap
       #
-
-      # staring the Zookeeper Esemble.
+      puts "Zookeeper Esemble starting up ..."
       node_managers.each do |h|
         mcServiceAction h, 'zookeeper-server', 'start'
       end
@@ -331,16 +344,14 @@ module Marionette
       #
       # 2. Zookeeper znode formating for Automatic Failover.
       #
-
-      # Warning FORMAT:
-      ###cmd = @cmdenv + 'sudo -E -u hdfs hdfs zkfc -formatZK -force'
-      ###dpExecuteAction nn1, cmd
+      # FIXME: Warning FORMAT
+      puts "Zookeeper Znode formating for Automatic Failover ..."
+      cmd = @cmdenv + 'sudo -E -u hdfs hdfs zkfc -formatZK -force'
+      dpExecuteAction nn1, cmd
 
       #
       # 3. QJM - Quorum Journal Manager startup.
       #
-      
-      # staring QJM
       puts "starting QJM ...."
       node_managers.each do |h|
         mcServiceAction h, 'hadoop-hdfs-journalnode', 'start'
@@ -349,25 +360,25 @@ module Marionette
       #
       # 4. HDFS format initialization
       #
-
-      # Warning FORMAT:
-      ####cmd = @cmdenv + 'sudo -E -u hdfs hdfs namenode -format -force'
-      ####dpExecuteAction nn1, cmd
+      # FIXME: Warning FORMAT
+      puts "Formating HDFS ...."
+      cmd = @cmdenv + 'sudo -E -u hdfs hdfs namenode -format -force'
+      dpExecuteAction nn1, cmd
 
       # 
       # 5. Namenodes startup
       #
-
+      puts "NameNodes start up ...."
       mcServiceAction nn1, 'hadoop-hdfs-namenode', 'start'
-      # Warning FORMAT:
-      ####cmd = @cmdenv + 'sudo -E -u hdfs hdfs namenode -bootstrapStandby'
-      ####dpExecuteAction nn2, cmd
+      # FIXME: Warning FORMAT:
+      cmd = @cmdenv + 'sudo -E -u hdfs hdfs namenode -bootstrapStandby'
+      dpExecuteAction nn2, cmd
       mcServiceAction nn2, 'hadoop-hdfs-namenode', 'start'
 
       # 
       # 6. Check HA
       #
-
+      puts "HA checking ..."
       cmd = @cmdenv + 'sudo -E -u hdfs hdfs haadmin -getServiceState nn1'
       dpExecuteAction nn1, cmd
       cmd = @cmdenv + 'sudo -E -u hdfs hdfs haadmin -getServiceState nn2'
@@ -376,20 +387,143 @@ module Marionette
       #
       # 7. Automatic Failover startup
       #
-
+      puts "Automatic Failover startup"
       mcServiceAction nn1, 'hadoop-hdfs-zkfc', 'start'
       mcServiceAction nn2, 'hadoop-hdfs-zkfc', 'start'
 
       #
-      # 8. Workers startup 
+      # 8. Workers node startup 
       #
       puts "starting DataNode workers...."
       node_workers.each do |h|
         mcServiceAction h, 'hadoop-hdfs-datanode', 'start'
       end
 
+      #
+      # 9. Minimal HDFS folders layout creation.
+      #
+      puts "HDFS folder initialization ..."
+      cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -mkdir /tmp'
+      dpExecuteAction nn1, cmd
+      cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -chmod -R 1777 /tmp'
+      dpExecuteAction nn1, cmd
+      cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -mkdir -p /user/history'
+      dpExecuteAction nn1, cmd
+      cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -mkdir /user/history/done_intermediate'
+      dpExecuteAction nn1, cmd
+      cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -chown -R mapred:mapred /user/history'
+      dpExecuteAction nn1, cmd
+      cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -chmod -R 777 /user/history'
+      dpExecuteAction nn1, cmd
 
+      #
+      # 10. History Server.
+      #
+      puts "Hisotry server starting up ..."
+      mcServiceAction rm, 'hadoop-mapreduce-historyserver', 'start'
+      cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -mkdir -p /var/log/hadoop-yarn'
+      dpExecuteAction nn1, cmd
+      cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -chown yarn:mapred /var/log/hadoop-yarn'
+      dpExecuteAction nn1, cmd
 
+      #
+      # 11. Example user creation.
+      #
+      puts "example user creation"
+      cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -mkdir -p /user/jroman'
+      dpExecuteAction nn1, cmd
+      cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -chown jroman /user/jroman'
+      dpExecuteAction nn1, cmd
+
+      #
+      # 11. YARN system start up
+      #
+      puts "YARN Framework starting up"
+      mcServiceAction rm, 'hadoop-yarn-resourcemanager', 'start'
+      node_workers.each do |h|
+        mcServiceAction h, 'hadoop-yarn-nodemanager', 'start'
+      end
+
+    end
+
+    # ==== Summary
+    #
+    # Gracefully start of Batch Layer.
+    #
+    # ==== Attributes
+    #
+    def batchLayerStart
+      node_managers, node_workers, nn1, nn2, rm = getClusterHosts
+
+      # 1. Start Zookeeper Esemble
+      puts "starting up Zookeeper Esemble...."
+      node_managers.each do |h|
+        mcServiceAction h, 'zookeeper-server', 'start'
+      end
+
+      # 2. Stop QJM
+      puts "starting up QJM ...."
+      node_managers.each do |h|
+        mcServiceAction h, 'hadoop-hdfs-journalnode', 'start'
+      end
+
+      # 3. Start namenodes and resourcemanager
+      puts "starting up NameNodes and ResourceManager ...."
+      mcServiceAction nn1, 'hadoop-hdfs-namenode', 'start'
+      mcServiceAction nn2, 'hadoop-hdfs-namenode', 'start'
+      mcServiceAction rm, 'hadoop-yarn-resourcemanager', 'start'
+
+      # 4. Start Automatic Failover
+      puts "starting up Zkfc ...."
+      mcServiceAction nn1, 'hadoop-hdfs-zkfc', 'start'
+      mcServiceAction nn2, 'hadoop-hdfs-zkfc', 'start'
+
+      # 5. start the workers.
+      puts "starting up DataNode workers...."
+      node_workers.each do |h|
+        mcServiceAction h, 'hadoop-hdfs-datanode', 'start'
+        mcServiceAction h, 'hadoop-yarn-nodemanager', 'start'
+      end
+    end
+
+    # ==== Summary
+    #
+    # Gracefully stop of Batch Layer.
+    #
+    # ==== Attributes
+    #
+    def batchLayerStop
+      node_managers, node_workers, nn1, nn2, rm = getClusterHosts
+
+      # 1. Stop the workers.
+      puts "shutting down DataNode workers...."
+      node_workers.each do |h|
+        mcServiceAction h, 'hadoop-hdfs-datanode', 'stop'
+        mcServiceAction h, 'hadoop-yarn-nodemanager', 'stop'
+      end
+
+      # 2. Stop Automatic Failover
+      puts "shutting down Zkfc ...."
+      mcServiceAction nn1, 'hadoop-hdfs-zkfc', 'stop'
+      mcServiceAction nn2, 'hadoop-hdfs-zkfc', 'stop'
+
+      # 3. Stop QJM
+      puts "shutting down QJM ...."
+      node_managers.each do |h|
+        mcServiceAction h, 'hadoop-hdfs-journalnode', 'stop'
+      end
+
+      # 4. Stop Zookeeper
+      puts "shutting down Zookeeper Esemble...."
+      node_managers.each do |h|
+        mcServiceAction h, 'zookeeper-server', 'stop'
+      end
+
+      # 5. Stop namenodes and resourcemanager
+      puts "shutting down NameNodes and ResourceManager ...."
+      mcServiceAction nn1, 'hadoop-hdfs-namenode', 'stop'
+      mcServiceAction nn2, 'hadoop-hdfs-namenode', 'stop'
+      mcServiceAction rm, 'hadoop-yarn-resourcemanager', 'stop'
     end
 
     # ==== Summary
@@ -451,6 +585,18 @@ module Marionette
 
       dpExecuteAction node[0], cmd
     end
+
+    def printReport
+      mc = rpcclient "rpcutil"
+      mc.compound_filter 'deploop_role=nn1'
+      node = mc.discover
+      mc.disconnect
+
+      cmd = @cmdenv + 'sudo -E -u hdfs hdfs dfsadmin -report'
+
+      dpExecuteAction node[0], cmd
+    end
+
 
   end # class MCHandler
 end
