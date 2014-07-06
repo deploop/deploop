@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby
 # vim: autoindent tabstop=2 shiftwidth=2 expandtab softtabstop=2 filetype=ruby
 #
 # Licensed to the Apache Software Foundation (ASF) under one
@@ -18,26 +17,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
-require 'optparse'
-require 'optparse/time'
-require 'ostruct'
-require 'pp'
+module Sanity
+  class SanityChecking
 
-require_relative '../lib/sanity'
-require_relative '../lib/optdeploop'
-require_relative '../lib/main'
-
-$VERSION = 'Deploop v0.0.1-alpha-build-04012014-120'
-
-class DeploopCli
-  def initialize(argv)
-    Sanity::SanityChecking.new
-    options = OptionsParser::OptparseDeploop.parse(argv)
-    Main::MainLogic.new(options)
-  end
-end
-
-if __FILE__ == $PROGRAM_NAME
-  cli = DeploopCli.new(ARGV)
+    def initialize
+      puts "checking proper environment ..."
+      raise 'Must run as root' unless Process.uid == 0
+    end
+  end # class SanityChecking
 end
 
