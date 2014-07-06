@@ -58,33 +58,65 @@ module OptionsParser
           options.json << file
         end
 
-       # sanity checking the syntax of JSON file
+        # sanity checking the syntax of JSON file
         opts.on("--check", "Check JSON file consistency") do |check|
           options.check = check
         end
 
-        # show facts per host
+        # Show facts per host:
+        #
+        # Example: 
+        # deploop -f cluster.json --show
+        #
         opts.on("--show", "Show facts in JSON cluster schema") do |show|
           options.show = show
         end
 
-        # List of arguments.
+        # Deploy from scratch a layer
+        #
+        # Example:
+        # deploop --deploy batch,bus
+        #
         opts.on("--deploy batch,speed,bus,serving", Array, "Deploy a cluster layer") do |deploy|
           options.deploy = deploy
         end
 
+        # Execute --deploy disanbling the deploop
+        # facts phase.
+        #
+        # Example:
+        # deploop --deploy batch --facts 
+        #
         opts.on("--nofacts", "skip facts deploying") do |nofacts|
           options.nofacts = nofacts
         end
 
+        # Execute --deploy disanbling the puppet
+        # run phase.
+        #
+        # Example:
+        # deploop --deploy batch --facts --norun
         opts.on("--norun", "skip puppet runs") do |norun|
           options.norun = norun
         end
 
+        # Execute --deploy with the only phase
+        # puppet run, after that exit the program.
+        #
+        # Example:
+        # deploop --deploy batch --facts --onlyrun
+        #
         opts.on("--onlyrun", "skip puppet runs") do |onlyrun|
           options.onlyrun = onlyrun
         end
 
+        # This parameter is for cluster operations
+        # when the cluster is already deployed.
+        #
+        # Example:
+        # deploop --layer batch --start
+        # deploop --layer batch --stop
+        #
         opts.on("--layer batch,speed,bus,serving", Array, "Define cluster for operation") do |layer|
           options.layer = layer
         end
@@ -97,6 +129,27 @@ module OptionsParser
           options.operation = 'stop'
         end
 
+        # This parameter is for enable Kerberos or
+        # disable Kerberos when the cluster is already deployed.
+        #
+        # Example:
+        # deploop --layer batch --kerberos
+        # deploop --layer batch --nokerberos
+        #
+        opts.on("--kerberos", "print batch topology") do |kerberos|
+          options.kerberos = kerberos
+        end
+
+        opts.on("--nokerberos", "print batch topology") do |nokerberos|
+          options.nokerberos = nokerberos
+        end
+
+        # Get information from Hadoop cluster for testing.
+        #
+        # Example:
+        # deploop --topology
+        # deploop --report
+        #
         opts.on("--topology", "print batch topology") do |topo|
           options.topology = topo
         end
@@ -113,7 +166,6 @@ module OptionsParser
         #
         # Operations around a hostname
         #
-
         opts.on("-h", "--host HOSTNAME", "hostname to handle") do |host|
           options.host = host
         end
@@ -125,7 +177,6 @@ module OptionsParser
         #
         # Generic options.
         #
-        
         # Boolean switch.
         opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
           options.verbose = v
