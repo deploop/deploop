@@ -1,0 +1,27 @@
+# External Data lookup CSV file used for customize the
+# cluster. manifests/init.pp expects configuration 
+# to live in this CSV.
+
+# Buildoop yum repository, or Spacewalk channel
+buildoop_yumrepo_uri,<%= @buildoop_yumrepo_uri %>
+
+# For use OpenJDK or Sun JDK
+jdk_package_name,jdk
+
+# We use hadoop security, simple or kerberos
+hadoop_security_authentication,<%= @hadoop_security_authentication %>
+
+# Service name for HDFS HA
+hadoop_ha_nameservice,<%= @hadoop_ha_nameservice %>
+
+# FQDN of NameNode
+hadoop_namenode_nn1,<%= @hadoop_namenode_nn1 %>
+
+# FQDN of standby node (for HA)
+hadoop_namenode_nn2,<%= @hadoop_namenode_nn2 %>
+
+# FQDN of ResourceManager node
+hadoop_resourcemanager,<%= @hadoop_resourcemanager %>
+
+
+
