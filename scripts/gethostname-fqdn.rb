@@ -18,20 +18,16 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# mco rpc rpcutil agent_inventory -I mncars001 -j
-
 require 'socket'
-require "mcollective"
-include MCollective::RPC
 
-$h = 'openbus-nn1.openbus.org'
-#$h = 'openbus-nn1'
-host = Socket.gethostbyname($h)
-mc = rpcclient "rpcutil"
-mc.identity_filter "#{host[1][0]}"
-mc.progress = false
+puts "using hostname"
+ret = Socket.gethostbyname("openbus-nn1")
 
-result = mc.inventory
-puts result[0][:data][:agents].include? 'deploop'
+puts "FQDN:     #{ret[0]}"
+puts "Hostname: #{ret[1]}"
 
-mc.disconnect 
+puts "using FQDN"
+ret = Socket.gethostbyname("openbus-nn1.openbus.org")
+
+puts "FQDN:     #{ret[0]}"
+puts "Hostname: #{ret[1]}"

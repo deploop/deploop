@@ -5,32 +5,32 @@
     "batch": 
     {
       "nn1": {
-        "hostname": "openbus-nn1",
+        "hostname": "openbus-nn1.openbus.org",
         "entity": ["flume", "monit"]
       },
       "nn2": {
-        "hostname": "openbus-nn2",
+        "hostname": "openbus-nn2.openbus.org",
         "entity": ["flume", "monit"]
       },
       "rm": {
-        "hostname": "openbus-rm",
+        "hostname": "openbus-rm.openbus.org",
         "entity": ["flume", "monit"]
       },
       "dn": [
           { 
-            "hostname":"openbus-dn1",  
+            "hostname":"openbus-dn1.openbus.org",  
             "entity": ["flume"]  
           },
           { 
-            "hostname":"openbus-dn2",  
+            "hostname":"openbus-dn2.openbus.org",  
             "entity": ["flume"]  
           },
           { 
-            "hostname":"openbus-dn3",  
+            "hostname":"openbus-dn3.openbus.org",  
             "entity": ["flume"]  
           },
 	  { 
-            "hostname":"openbus-dn4",  
+            "hostname":"openbus-dn4.openbus.org",  
             "entity": ["flume"]  
           }
       ]

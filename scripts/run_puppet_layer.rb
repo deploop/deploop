@@ -25,6 +25,11 @@ require 'rubygems'
 require "mcollective"
 include MCollective::RPC
    
+def func1
+  puts "func1 at: #{Time.now}"
+  sleep(120)
+end
+
 layer='batch'
 interval=2
 
@@ -37,8 +42,11 @@ nodes = mc.discover.sort
 
 result = mc.runonce(:forcerun => true, :batch_size => interval)
 puts "schedule status: #{result[0][:statusmsg]}"
-#puts "hoss returned unknown output: #{result.pretty_inspect}"
 printrpcstats
 
+t1=Thread.new{func1()}
+puts 'waiting for puppet run all catalog finished'
+t1.join
+puts 'done'
 
 

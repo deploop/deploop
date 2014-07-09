@@ -17,6 +17,7 @@
 # specific language governing permissions and limitations
 # under the License.
     
+require 'socket'
 require 'net/ping'
 require "mcollective"
 
@@ -56,7 +57,11 @@ module Marionette
     #
     def checkIfDeploopHost(host)
       mc = rpcclient "rpcutil"
-      mc.identity_filter "#{host}"
+
+      # https://github.com/deploop/deploop/issues/5
+
+      h = Socket.gethostbyname(host)
+      mc.identity_filter "#{h[1][0]}"
       mc.progress = false
 
       result = mc.inventory
@@ -82,7 +87,8 @@ module Marionette
     def deployEnv(host, env)
       mc = rpcclient "deploop"
 
-      mc.identity_filter host
+      h = Socket.gethostbyname(host)
+      mc.identity_filter "#{h[1][0]}"
       mc.progress = false
 
       mc.puppet_environment(:env => env)
@@ -109,7 +115,8 @@ module Marionette
     def deployFact(host, fact, value)
       mc = rpcclient "deploop"
 
-      mc.identity_filter host
+      h = Socket.gethostbyname(host)
+      mc.identity_filter "#{h[1][0]}"
       mc.progress = false
 
       mc.create_fact(:fact => fact, :value => value)
@@ -551,7 +558,10 @@ module Marionette
     #
     def mcServiceAction(host, service, cmd)
       mc = rpcclient "service"
-      mc.identity_filter "#{host}"
+
+      h = Socket.gethostbyname(host)
+      mc.identity_filter "#{h[1][0]}"
+
       mc.progress = false
       if cmd == 'start'
         res = mc.start(:service => service)
@@ -573,7 +583,8 @@ module Marionette
     #
     def dpExecuteAction(host, cmd)
       mc = rpcclient "deploop"
-      mc.identity_filter "#{host}"
+      h = Socket.gethostbyname(host)
+      mc.identity_filter "#{h[1][0]}"
       mc.progress = false
 
       result = mc.execute(:cmd=> cmd)
