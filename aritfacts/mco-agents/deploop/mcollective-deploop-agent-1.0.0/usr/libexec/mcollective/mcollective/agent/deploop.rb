@@ -58,6 +58,8 @@ module MCollective
         factpath='factpath=/var/lib/puppet/facts.d/'
         disableplugin='pluginsync=false'
 
+        Dir.mkdir(factpath) unless File.exists?(factpath)
+
         File.open("/etc/puppet/puppet.conf","a+") {|f| 
           f.puts(disableplugin)
           f.puts(factpath) 
