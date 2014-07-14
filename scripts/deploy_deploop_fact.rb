@@ -24,14 +24,14 @@
 require "mcollective"
 include MCollective::RPC
    
-$h = 'mncars001'
+$h = 'openbus-nn1'
 mc = rpcclient "deploop"
 
 mc.identity_filter "#{$h}"
 mc.progress = false
 
-#mc.puppet_environment(:env => 'production')
-mc.create_fact(:fact => 'collection', :value => 'production')
+mc.puppet_environment(:env => 'production')
+#mc.create_fact(:fact => 'collection', :value => 'production')
 
 mc.disconnect 
 
