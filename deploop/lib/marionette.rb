@@ -124,6 +124,27 @@ module Marionette
       mc.disconnect 
     end
 
+    def checkForPuppetRun(nodes, ep)
+      m = rpcclient "puppet"
+      m.progress = false
+      processed = nodes.dup
+      while nodes.any? do
+        nodes.each do |n|
+          m.reset_filter
+          m.identity_filter n
+          ret = m.status(:forcerun => true)
+          status = ret[0][:data][:status]
+          epoch = ret[0][:data][:lastrun]
+          if (status == 'stopped' and epoch > ep)
+            puts "Finished catalog run for #{n}"
+            processed.delete n
+          end
+        end
+        nodes = processed.dup
+        sleep(5)
+      end
+    end
+
     # ==== Summary
     #
     # This method is used for execute a
@@ -136,6 +157,9 @@ module Marionette
     # * +interval+ - the batch execution of mcollective
     #
     def puppetRunBatch(layer, interval)
+
+      epoch = Time.now.to_i
+
       mc = rpcclient "puppet"
       mc.compound_filter "deploop_category=#{layer}"
       mc.progress = false
@@ -144,8 +168,11 @@ module Marionette
       nodes = mc.discover.sort
 
       result = mc.runonce(:forcerun => true, :batch_size => interval)
-      puts "schedule status: #{result[0][:statusmsg]}"
-      printrpcstats
+      waitPuppetRun = Thread.new{checkForPuppetRun nodes, epoch}
+      puts 'waiting for puppet run all catalog finished'
+
+      waitPuppetRun.join
+      puts 'DONE!'
     end
 
     # ==== Summary

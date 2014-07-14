@@ -59,7 +59,7 @@ module MCollective
         disableplugin='pluginsync=false'
         conffile = '/etc/puppet/puppet.conf'
 
-        Dir.mkdir(factpath) unless File.exists?('/var/lib/puppet/facts.d/')
+        Dir.mkdir('/var/lib/puppet/facts.d/') unless File.exists?('/var/lib/puppet/facts.d/')
 
         # Purge file for new entries if the file was deplooyed.
         string = IO.read(conffile)
