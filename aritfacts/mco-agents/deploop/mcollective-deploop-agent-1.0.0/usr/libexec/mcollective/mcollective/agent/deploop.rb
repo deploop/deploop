@@ -57,10 +57,19 @@ module MCollective
         env = "environment=#{env}"
         factpath='factpath=/var/lib/puppet/facts.d/'
         disableplugin='pluginsync=false'
+        conffile = '/etc/puppet/puppet.conf'
 
         Dir.mkdir(factpath) unless File.exists?(factpath)
 
-        File.open("/etc/puppet/puppet.conf","a+") {|f| 
+        # Purge file for new entries if the file was deplooyed.
+        string = IO.read(conffile)
+        string = string.gsub!(/^pluginsync.*/m, '')
+        if !string.nil?
+          File.open(conffile,"w") { |f| f << string }
+        end
+
+        # writes new entries at tail.
+        File.open(conffile, "a+") {|f| 
           f.puts(disableplugin)
           f.puts(factpath) 
           f.puts(env)
