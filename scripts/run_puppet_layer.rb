@@ -25,28 +25,45 @@ require 'rubygems'
 require "mcollective"
 include MCollective::RPC
    
-def func1
-  puts "func1 at: #{Time.now}"
-  sleep(120)
+def func1(nodes, mc)
+  m = rpcclient "puppet"
+  m.progress = false
+  processed = nodes.dup
+  while nodes.any? do
+    nodes.each do |n|
+      m.reset_filter
+      m.identity_filter n
+      ret = m.status(:forcerun => true)
+      #p ret
+      status = ret[0][:data][:status]
+      epoch = ret[0][:data][:lastrun]
+      if (status == 'stopped' and epoch > $epoch)
+        puts "Finished catalog run for #{n}"
+        processed.delete n
+      end
+    end
+    nodes = processed.dup
+    sleep(5)
+  end
 end
 
 layer='batch'
 interval=2
 
+$epoch = Time.now.to_i
+
 mc = rpcclient "puppet"
 mc.compound_filter "deploop_category=#{layer}"
-mc.progress = false
+mc.progress = true
 
 nodes = mc.discover
 nodes = mc.discover.sort
 
 result = mc.runonce(:forcerun => true, :batch_size => interval)
-puts "schedule status: #{result[0][:statusmsg]}"
-printrpcstats
 
-t1=Thread.new{func1()}
+t1=Thread.new{func1 nodes, mc}
 puts 'waiting for puppet run all catalog finished'
 t1.join
-puts 'done'
+puts 'DONE!'
 
 
