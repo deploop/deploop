@@ -4,7 +4,7 @@ metadata :name        => "Deploop Facter Deployer",
          :license     => "APL-2.0",
          :version     => "0.0.1",
          :url         => "https://github.com/deploop",
-         :timeout     => 10
+         :timeout     => 60
 
 action "create_fact", :description => "Create Deploop Facter in Agent" do
     display :always

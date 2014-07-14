@@ -25,12 +25,14 @@ include MCollective::RPC
 
 #$cmd='ls -l'
 cmdenv = 'source /etc/profile.d/java.sh && '
-$cmd = cmdenv + 'sudo -E -u hdfs hdfs zkfc -formatZK -force'
+#$cmd = cmdenv + 'sudo -E -u hdfs hdfs zkfc -formatZK -force'
+$cmd = cmdenv + 'sudo -E -u hdfs hadoop jar /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-jobclient-2.2.0.jar TestDFSIO -write -nrFiles 10 -fileSize 3 -resFile /tmp/TestDFSIOresults.txt'
 
 $h = 'openbus-nn1'
 mc = rpcclient "deploop"
 mc.identity_filter "#{$h}"
 mc.progress = false
+mc.timeout = 300
 
 result = mc.execute(:cmd=> $cmd)
 
