@@ -35,6 +35,7 @@ require 'pp'
 
 require_relative '../lib/marionette'
 require_relative '../lib/outputhandler'
+require_relative '../lib/extlookup'
 
 module DeployFacts
   # Multi-sided dice class.  The number of sides is determined
@@ -79,7 +80,7 @@ module DeployFacts
       #
       # host['mncars003'] = {:a=>"new", :b=>"value"}
       #
-      # The host list with their facts
+      # The host list with their facts: gattered from the JSON file.
       @host_facts = Hash.new
     end
 
@@ -221,6 +222,10 @@ module DeployFacts
         case d
         when 'batch'
           if !@opt.nofacts
+            # This is the only method using the JSON information
+            # The reamin methods, puppetRunBatch, handleBatchLayer,
+            # are using the mcollective discoverty feature using
+            # the deployed facts.
             deployFactsLayer 'batch'
           end
           if !@opt.norun

@@ -33,6 +33,9 @@ module Main
       # cli parameters.
       @opt = opt
 
+      # Extlookup csv file render
+      #@csv = ExtLookup::CSVExtLookup.new 'uno', 'dos'
+
       # main method for Opt navigation.
       navigateOptions
     end

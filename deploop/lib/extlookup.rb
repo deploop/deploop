@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby
 # vim: autoindent tabstop=2 shiftwidth=2 expandtab softtabstop=2 filetype=ruby
 #
 # Licensed to the Apache Software Foundation (ASF) under one
@@ -18,21 +17,22 @@
 # specific language governing permissions and limitations
 # under the License.
 
-require_relative '../lib/sanity'
-require_relative '../lib/optdeploop'
-require_relative '../lib/main'
+require 'erb'
 
-$VERSION = 'Deploop v0.0.1-alpha-build-04012014-120'
+module ExtLookup
+  class CSVExtLookup
+    def initialize(arg1, arg2)
+      @csvfile_template = File.read('templates/site.csv.erb')
+      @arg1 = arg1;  @arg2 = arg2
+      renderTemplate
+    end
 
-class DeploopCli
-  def initialize(argv)
-    Sanity::SanityChecking.new
-    options = OptionsParser::OptparseDeploop.parse(argv)
-    Main::MainLogic.new(options)
-  end
+    def renderTemplate()
+      template = ERB.new @csvfile_template
+      template.result
+    end
+  end # class ExtLookup
 end
 
-if __FILE__ == $PROGRAM_NAME
-  cli = DeploopCli.new(ARGV)
-end
+
 
