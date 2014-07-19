@@ -35,7 +35,7 @@ require 'pp'
 
 require_relative '../lib/marionette'
 require_relative '../lib/outputhandler'
-require_relative '../lib/extlookup'
+require_relative '../lib/environment'
 
 module DeployFacts
   # Multi-sided dice class.  The number of sides is determined
