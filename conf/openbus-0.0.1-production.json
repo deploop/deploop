@@ -1,4 +1,6 @@
 {
+  "environments_path": "../deploop-environments.git",
+  "environments_branch": "buildoop-openbus-0.0.1",
   "production": 
   {
     "name": "buildoop",
