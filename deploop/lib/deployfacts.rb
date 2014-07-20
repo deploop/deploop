@@ -109,7 +109,8 @@ module DeployFacts
         puts "ERROR: JSON file parsing error"
         exit
       end
-    end # class FactsDeployer
+      @parsed_obj
+    end 
 
     # ==== Summary
     #
@@ -182,6 +183,10 @@ module DeployFacts
             end
         end
       end
+    end
+
+    def loadJSON(json)
+      checkJSON(json)
     end
 
     def createFactsHash(json, show)

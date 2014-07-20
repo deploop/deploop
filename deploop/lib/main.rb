@@ -31,13 +31,17 @@ module Main
       @facts = DeployFacts::FactsDeployer.new opt
 
       # stdout, stderr handler for Ruby on Rails or cli calls.
+      # The constructor get the -j or --json parameter from cli.
       @outputHandler = OutputModule::OutputHandler.new opt.output
 
-      # cli parameters.
-      @opt = opt
+      # Setup the puppet environment for multi-cluster setup.
+      @environment = Environment::PuppetEnvironment.new @outputHandler
 
       # Extlookup csv file render
       #@csv = ExtLookup::CSVExtLookup.new 'uno', 'dos'
+
+      # cli parameters.
+      @opt = opt
 
       # main method for Opt navigation.
       navigateOptions
@@ -47,7 +51,6 @@ module Main
       if @opt.verbose 
           puts @opt
       end
-
       
       # Code realted with CLI parameter -f JSON.file.
       # This option is used for the full deploy of a new
@@ -59,12 +62,17 @@ module Main
       #
       # Example of CLI call:
       #
+      #   deploop -f cluster.json --set-environment
       #   deploop -f cluster.json --deploy batch,bus
       #   deploop -f cluster.json --deploy batch --nofacts --norun
       #
       if !@opt.json.empty?
         if !File.exist?(@opt.json[0])
           @outputHandler.msgError "ERROR: unable open file #{@opt.json}"
+        end
+        if @opt.penv
+          @environment.createPuppetMasterEnv @facts.loadJSON @opt.json[0]
+          exit
         end
         if @opt.show
           @facts.createFactsHash @opt.json[0], true

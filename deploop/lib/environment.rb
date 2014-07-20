@@ -21,20 +21,44 @@
 # Website:: http://www.redoop.org
 
 require 'erb'
+require 'git'
+require 'logger'
+require 'fileutils'
 
-module ExtLookup
-  class CSVExtLookup
-    def initialize(arg1, arg2)
-      @csvfile_template = File.read('templates/site.csv.erb')
-      @arg1 = arg1;  @arg2 = arg2
-      renderTemplate
+module Environment
+  class PuppetEnvironment
+    def initialize(outputHandler)
+      @outputHandler = outputHandler
+      puts "Setting up the catalog environemt"
+      puts "---------------------------------"
     end
 
-    def renderTemplate()
-      template = ERB.new @csvfile_template
-      template.result
+    #
+    # https://github.com/schacon/ruby-git
+    #
+    # FIXME: error handle and sanity copy.
+    def createPuppetMasterEnv(json_loaded)
+      git_working_dir = json_loaded['environment_path']
+      git_buildoop_branch = json_loaded['environment_branch']
+      puppet_environment = json_loaded['environment_cluster']
+
+      @outputHandler.msgOutput 'Patch to environments: ' + git_working_dir
+      @outputHandler.msgOutput 'Based on Buildoop branch: ' + git_buildoop_branch
+
+      # git staff
+      g = Git.open(git_working_dir, :log => Logger.new(STDOUT))
+      g.branches.remote
+      g.branch(git_buildoop_branch).checkout
+
+      # copy environment to puppet location
+      FileUtils.mkdir_p('/etc/puppet/environments/')
+
+      FileUtils.cp_r git_working_dir + "/all", 
+          '/etc/puppet/environments', :verbose => true
+      FileUtils.cp_r git_working_dir + "/cluster-name", 
+          "/etc/puppet/environments/#{puppet_environment}", :verbose => true
     end
-  end # class ExtLookup
+  end # class PuppetEnvironment
 end
 
 

@@ -75,6 +75,15 @@ module OptionsParser
           options.show = show
         end
 
+        # Only set up the puppet environment:
+        #
+        # Example: 
+        # deploop -f cluster.json --set-environment
+        #
+        opts.on("--set-environment", "Show facts in JSON cluster schema") do |penv|
+          options.penv = penv
+        end
+
         # Deploy from scratch a layer
         #
         # Example:
