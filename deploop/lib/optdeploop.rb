@@ -126,9 +126,14 @@ module OptionsParser
         # when the cluster is already deployed.
         #
         # Example:
-        # deploop --layer batch --start
-        # deploop --layer batch --stop
+        # deploop --cluster production --layer batch --start
+        # deploop --cluster production --layer batch --stop
         #
+        opts.on("--cluster", "cluster name",
+                "The cluster name over works") do |cluster|
+          options.cluster << cluster
+        end
+
         opts.on("--layer batch,speed,bus,serving", Array, "Define cluster for operation") do |layer|
           options.layer = layer
         end

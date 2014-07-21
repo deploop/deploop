@@ -70,21 +70,24 @@ module Main
         if !File.exist?(@opt.json[0])
           @outputHandler.msgError "ERROR: unable open file #{@opt.json}"
         end
+        # create puppet environment for Testing.
         if @opt.penv
           @environment.createPuppetMasterEnv @facts.loadJSON @opt.json[0]
           exit
         end
-        if @opt.show
+        # show facts for Testing.
+        if @opt.show 
           @facts.createFactsHash @opt.json[0], true
           exit
         end
-        # integrity checking
+        # integrity checking for Testing.
         if @opt.check
           @facts.checkJSON @opt.json[0]
           exit
         end
-        # cluster deployment
+        # cluster real deployment, no Testing.
         if @opt.deploy
+          @environment.createPuppetMasterEnv @facts.loadJSON @opt.json[0]
           @facts.createFactsHash @opt.json[0], false
           exit
         else
@@ -100,8 +103,8 @@ module Main
       #
       # Example of CLI call:
       # 
-      # deploop --layer batch --stop
-      # deploop --layer batch,speed --start
+      # deploop --cluster production --layer batch --stop
+      # deploop --cluster production --layer batch,speed --start
       #
       if @opt.layer
         if !@opt.operation
@@ -109,8 +112,8 @@ module Main
           puts 'example: deploop --layer batch --stop'
           exit
         else
-          # you run an action (start/stop) over a cluster (layer).
-          @facts.layerRunAction @opt.layer, @opt.operation
+          # you run an action (start/stop) over a cluster and layer.
+          @facts.layerRunAction @opt.cluster, @opt.layer, @opt.operation
         end
       end
 
@@ -123,11 +126,11 @@ module Main
       end
 
       if @opt.topology
-        @facts.printTopology
+        @facts.printTopology @opt.cluster
       end
 
       if @opt.report
-        @facts.printReport
+        @facts.printReport @opt.cluster
       end
 
     end

@@ -159,12 +159,12 @@ module Marionette
     # * +layer+ - the layer over to run the puppet runs
     # * +interval+ - the batch execution of mcollective
     #
-    def puppetRunBatch(layer, interval)
+    def puppetRunBatch(cluster, layer, interval)
 
       epoch = Time.now.to_i
 
       mc = rpcclient "puppet"
-      mc.compound_filter "deploop_category=#{layer}"
+      mc.compound_filter "deploop_collection=#{cluster} and deploop_category=#{layer}"
       mc.progress = false
 
       nodes = mc.discover
@@ -192,14 +192,14 @@ module Marionette
     #
     # * +operation+ - start/stop or bootstrap.
     #
-    def handleBatchLayer(operation)
+    def handleBatchLayer(cluster, operation)
         case operation
         when 'bootstrap'
-          batchLayerBootStrapping
+          batchLayerBootStrapping cluster
         when 'start'
-          batchLayerStart
+          batchLayerStart cluster
         when 'stop'
-          batchLayerStop
+          batchLayerStop cluster
         else
           puts "ERROR"
         end
@@ -249,7 +249,7 @@ module Marionette
     #
     # * +operation+ - start/stop or bootstrap.
     #
-    def handleBusLayer(operation)
+    def handleBusLayer(cluster, operation)
         case operation
         when 'bootstrap'
           puts 'bootstrap bus layer'
@@ -276,7 +276,7 @@ module Marionette
     #
     # * +operation+ - start/stop or bootstrap.
     #
-    def handleSpeedLayer(operation)
+    def handleSpeedLayer(cluster, operation)
         case operation
         when 'bootstrap'
           puts 'bootstrap speed layer'
@@ -303,7 +303,7 @@ module Marionette
     #
     # * +operation+ - start/stop or bootstrap.
     #
-    def handleServingLayer(operation)
+    def handleServingLayer(cluster, operation)
         case operation
         when 'bootstrap'
           puts 'bootstrap serving layer'
@@ -316,30 +316,30 @@ module Marionette
         end
     end
 
-    def getClusterHosts
+    def getClusterHosts(cluster)
       # discovering the node managers.
       mc = rpcclient "rpcutil"
-      mc.compound_filter 'deploop_role=nn1 or deploop_role=nn2 or deploop_role=rm'
+      mc.compound_filter "(deploop_role=nn1 or deploop_role=nn2 or deploop_role=rm) and deploop_collection=#{cluster} "
       node_managers = mc.discover
       
       # the workers list
       mc.reset_filter
-      mc.compound_filter 'deploop_role=dn'
+      mc.compound_filter "deploop_collection=#{cluster} and deploop_role=dn"
       node_workers = mc.discover
 
       # storing nodemanagers one by one
       mc.reset_filter
-      mc.compound_filter 'deploop_role=nn1'
+      mc.compound_filter "deploop_collection=#{cluster} and deploop_role=nn1"
       node = mc.discover
       nn1 = node[0]
 
       mc.reset_filter
-      mc.compound_filter 'deploop_role=nn2'
+      mc.compound_filter "deploop_collection=#{cluster} and deploop_role=nn2"
       node = mc.discover
       nn2 = node[0]
 
       mc.reset_filter
-      mc.compound_filter 'deploop_role=rm'
+      mc.compound_filter "deploop_collection=#{cluster} and deploop_role=rm"
       node = mc.discover
       rm = node[0]
       mc.disconnect
@@ -365,8 +365,8 @@ module Marionette
     #
     # ==== Attributes
     #
-    def batchLayerBootStrapping
-      node_managers, node_workers, nn1, nn2, rm = getClusterHosts
+    def batchLayerBootStrapping(cluster)
+      node_managers, node_workers, nn1, nn2, rm = getClusterHosts cluster
 
       puts "Batch Layer (Hadoop) Bootstrap ..."
 
@@ -489,7 +489,7 @@ module Marionette
     #
     # ==== Attributes
     #
-    def batchLayerStart
+    def batchLayerStart(cluster)
       node_managers, node_workers, nn1, nn2, rm = getClusterHosts
 
       # 1. Start Zookeeper Esemble
@@ -535,7 +535,7 @@ module Marionette
     #
     # ==== Attributes
     #
-    def batchLayerStop
+    def batchLayerStop(cluster)
       node_managers, node_workers, nn1, nn2, rm = getClusterHosts
 
       # 1. Stop the workers.
@@ -628,9 +628,9 @@ module Marionette
       result[0][:data][:exitcode]
     end
 
-    def printTopology
+    def printTopology(cluster)
       mc = rpcclient "rpcutil"
-      mc.compound_filter 'deploop_role=nn1'
+      mc.compound_filter "deploop_collection=#{cluster} and deploop_role=nn1"
       node = mc.discover
       mc.disconnect
 
@@ -639,9 +639,9 @@ module Marionette
       dpExecuteAction node[0], cmd
     end
 
-    def printReport
+    def printReport(cluster)
       mc = rpcclient "rpcutil"
-      mc.compound_filter 'deploop_role=nn1'
+      mc.compound_filter "deploop_collection=#{cluster} and deploop_role=nn1"
       node = mc.discover
       mc.disconnect
 

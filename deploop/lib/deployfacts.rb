@@ -59,7 +59,6 @@ module DeployFacts
   class FactsDeployer
     def initialize(opt)
       @opt = opt
-      @collections = ['production', 'preproduction', 'test']
       @categories = ['batch', 'bus', 'speed', 'serving']
       @roles_batch = ['nn1', 'nn2', 'rm', 'dn']
       @roles_speed = ['master', 'worker']
@@ -144,7 +143,7 @@ module DeployFacts
       $roles.each do |r|
         case r
         when 'dn', 'worker'
-          @parsed_obj[collection][category][r].each do |w|
+          @parsed_obj['cluster_layout'][category][r].each do |w|
               $hostname=w['hostname']
               $entities=w['entity']
 
@@ -164,8 +163,8 @@ module DeployFacts
               end
            end
         else
-            $hostname=@parsed_obj[collection][category][r]["hostname"]
-            $entities=@parsed_obj[collection][category][r]["entity"]
+            $hostname=@parsed_obj['cluster_layout'][category][r]["hostname"]
+            $entities=@parsed_obj['cluster_layout'][category][r]["entity"]
 
             @host_facts[$hostname] = 
                 { 'deploop_collection' => collection, 
@@ -185,22 +184,29 @@ module DeployFacts
       end
     end
 
+    # ==== Summary
+    #
+    # Load the JSON file and retuns it, also the JSON
+    # loaded is stored in the class variable @parsed_obj
+    #
+    # ==== Attributes
+    #
+    # ==== Returns
+    #
+    # ==== Examples
+    #
     def loadJSON(json)
       checkJSON(json)
     end
 
     def createFactsHash(json, show)
-      checkJSON(json)
-      @collections.each do |a|
-        if @parsed_obj[a]
-          @categories.each do |b|
-            if @parsed_obj['production'][b]
-              create_facts 'production',b, show
-            end
-          end
-        end
+      loadJSON(json)
+      @categories.each do |b|
+        create_facts @parsed_obj['environment_cluster'], b, show
       end
+
       if !show
+        # the real deployment is here.
         deployClusters
       end
     end
@@ -234,10 +240,12 @@ module DeployFacts
             deployFactsLayer 'batch'
           end
           if !@opt.norun
-            @mchandler.puppetRunBatch 'batch', 2
+            # this method uses the mc discovery subsystem.
+            @mchandler.puppetRunBatch @opt.cluster, 'batch', 2
           end
           if !@opt.onlyrun
-            @mchandler.handleBatchLayer 'bootstrap'
+            # this method uses the mc discovery subsystem.
+            @mchandler.handleBatchLayer @opt.cluster, 'bootstrap'
           end
         when 'bus'
           if !@opt.nofacts
@@ -303,7 +311,18 @@ module DeployFacts
       msg = "The layer \'#{layer}\' has all host Deploop enabled"
       @outputHandler.msgOutput msg
     end
-    
+
+    # ==== Summary
+    #
+    # The fist step in the deployment. The facts spread.
+    # First of all is the environemnt setup in the puppet
+    # agents. And the second the deploop_xxx facts population
+    # with the roles of the nodes.
+    #
+    # ==== Attributes
+    #
+    # * +layer+ - The cluster layer
+    #
     def deployFactsLayer(layer)
       deploop_facts = ['deploop_collection',
                       'deploop_category',
@@ -326,17 +345,17 @@ module DeployFacts
       end
     end
 
-    def layerRunAction(layers, action)
+    def layerRunAction(cluster, layers, action)
       layers.each do |d|
         case d
         when 'batch'
-          @mchandler.handleBatchLayer action
+          @mchandler.handleBatchLayer cluster, action
         when 'bus'
-          @mchandler.handleBusLayer action
+          @mchandler.handleBusLayer cluster, action
         when 'speed'
-          @mchandler.handleSpeedLayer action
+          @mchandler.handleSpeedLayer cluster, action
         when 'serving'
-          @mchandler.handleServingLayer action
+          @mchandler.handleServingLayer cluster, action
         else
           puts "ERROR: no exits layer"
           exit

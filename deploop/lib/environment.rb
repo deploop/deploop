@@ -30,7 +30,6 @@ module Environment
     def initialize(outputHandler)
       @outputHandler = outputHandler
       puts "Setting up the catalog environemt"
-      puts "---------------------------------"
     end
 
     #
@@ -57,6 +56,12 @@ module Environment
           '/etc/puppet/environments', :verbose => true
       FileUtils.cp_r git_working_dir + "/cluster-name", 
           "/etc/puppet/environments/#{puppet_environment}", :verbose => true
+
+      fillExtlookupCSV json_loaded
+    end
+
+    def fillExtlookupCSV(json_loaded)
+
     end
   end # class PuppetEnvironment
 end
