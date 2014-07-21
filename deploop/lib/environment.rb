@@ -49,9 +49,11 @@ module Environment
       g.branches.remote
       g.branch(git_buildoop_branch).checkout
 
-      # copy environment to puppet location
+      confirm_action? "the /etc/puppet/environments will be erased,"
+      FileUtils.rm_rf('/etc/puppet/environments/')
       FileUtils.mkdir_p('/etc/puppet/environments/')
 
+      # copy environment to puppet location
       FileUtils.cp_r git_working_dir + "/all", 
           '/etc/puppet/environments', :verbose => true
       FileUtils.cp_r git_working_dir + "/cluster-name", 
@@ -63,6 +65,22 @@ module Environment
     def fillExtlookupCSV(json_loaded)
 
     end
+
+    def confirm_action?(msg)
+      cont = true
+      while cont
+        print msg + " are you sure? [y/n]: "
+        case gets.strip
+          when 'Y', 'y', 'j', 'J', 'yes' 
+            cont = false
+          when /\A[nN]o?\Z/
+            exit
+        end
+      end
+    end
+
+
+
   end # class PuppetEnvironment
 end
 
