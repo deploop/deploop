@@ -63,6 +63,22 @@ module Environment
     end
 
     def fillExtlookupCSV(json_loaded)
+      @buildoop_yumrepo_uri = 'http://openbus-buildoop.openbus.org:8081/'
+      @hadoop_security_authentication = 'simple'
+      @hadoop_ha_nameservice = json_loaded['cluster_layout']['name'] 
+      @hadoop_namenode_nn1 = json_loaded['cluster_layout']['batch']['nn1']['hostname']
+      @hadoop_namenode_nn2 = json_loaded['cluster_layout']['batch']['nn2']['hostname']
+      @hadoop_resourcemanager = json_loaded['cluster_layout']['batch']['rm']['hostname']
+
+      csv_erb = "/etc/puppet/environments/#{json_loaded['environment_cluster']}/extdata/site.csv.erb"
+      csv = "/etc/puppet/environments/#{json_loaded['environment_cluster']}/extdata/site.csv"
+
+      template_file = File.open(csv_erb, 'r').read
+      erb = ERB.new(template_file)
+      
+      File.open(csv, 'w+') { 
+        |file| file.write(erb.result(binding)) 
+      }
 
     end
 
