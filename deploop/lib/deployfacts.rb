@@ -366,12 +366,12 @@ module DeployFacts
       end
     end
 
-    def printTopology
-      @mchandler.printTopology
+    def printTopology(cluster)
+      @mchandler.printTopology cluster
     end
 
-    def printReport
-      @mchandler.printReport
+    def printReport(cluster)
+      @mchandler.printReport cluster
     end
 
   end

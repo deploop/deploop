@@ -166,11 +166,11 @@ module OptionsParser
         # deploop --topology
         # deploop --report
         #
-        opts.on("--topology", "print batch topology") do |topo|
-          options.topology = topo
+        opts.on("--topology", "print batch topology") do |topology|
+          options.topology = topology
         end
 
-        opts.on("--report", "print batch topology") do |report|
+        opts.on("--report", "print batch HDFS reporting") do |report|
           options.report = report
         end
 

@@ -1,39 +1,35 @@
 {
-  "environments_path": "../deploop-environments.git",
-  "environments_branch": "buildoop-openbus-0.0.1",
-  "environment_cluster": "othercluster",
+  "environment_path": "../deploop-environments.git",
+  "environment_branch": "buildoop-openbus-0.0.1",
+  "environment_cluster": "testcluster",
   "cluster_layout": 
   {
-    "name": "buildoop",
+    "name": "redoop",
     "batch": 
     {
       "nn1": {
-        "hostname": "openbus-nn1.openbus.org",
+        "hostname": "redoop-nn1.openbus.org",
         "entity": ["flume", "monit"]
       },
       "nn2": {
-        "hostname": "openbus-nn2.openbus.org",
+        "hostname": "redoop-nn2.openbus.org",
         "entity": ["flume", "monit"]
       },
       "rm": {
-        "hostname": "openbus-rm.openbus.org",
+        "hostname": "redoop-rm.openbus.org",
         "entity": ["flume", "monit"]
       },
       "dn": [
           { 
-            "hostname":"openbus-dn1.openbus.org",  
+            "hostname":"redoop-dn1.openbus.org",  
             "entity": ["flume"]  
           },
           { 
-            "hostname":"openbus-dn2.openbus.org",  
+            "hostname":"redoop-dn2.openbus.org",  
             "entity": ["flume"]  
           },
           { 
-            "hostname":"openbus-dn3.openbus.org",  
-            "entity": ["flume"]  
-          },
-	  { 
-            "hostname":"openbus-dn4.openbus.org",  
+            "hostname":"redoop-dn3.openbus.org",  
             "entity": ["flume"]  
           }
       ]

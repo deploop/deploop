@@ -49,9 +49,9 @@ module Environment
       g.branches.remote
       g.branch(git_buildoop_branch).checkout
 
-      confirm_action? "the /etc/puppet/environments will be erased,"
-      FileUtils.rm_rf('/etc/puppet/environments/')
-      FileUtils.mkdir_p('/etc/puppet/environments/')
+      #confirm_action? "the /etc/puppet/environments will be erased,"
+      #FileUtils.rm_rf('/etc/puppet/environments/')
+      #FileUtils.mkdir_p('/etc/puppet/environments/')
 
       # copy environment to puppet location
       FileUtils.cp_r git_working_dir + "/all", 

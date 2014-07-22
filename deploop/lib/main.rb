@@ -95,7 +95,6 @@ module Main
         end
       end
 
-       
       # with --layer parameter you can start/stop
       # a whole layer (cluster). The start/stop is 
       # over a yet deployed  cluster. So the JSON 
@@ -107,6 +106,10 @@ module Main
       # deploop --cluster production --layer batch,speed --start
       #
       if @opt.layer
+        if @opt.cluster.nil?
+          puts "ERROR: you have put a cluster name"
+          exit
+        end
         if !@opt.operation
           puts 'ERROR: you have to put an operation over the layers (start, stop)'
           puts 'example: deploop --layer batch --stop'
@@ -126,10 +129,17 @@ module Main
       end
 
       if @opt.topology
+        if @opt.cluster.nil?
+          puts "ERROR: you have to give a cluster name topology"
+          exit
+        end
         @facts.printTopology @opt.cluster
       end
 
-      if @opt.report
+      if (@opt.report and @opt.cluster.nil?)
+        puts "ERROR: you have to give a cluster name for reporting"
+        exit
+      else
         @facts.printReport @opt.cluster
       end
 
