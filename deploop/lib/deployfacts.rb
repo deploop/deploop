@@ -228,6 +228,9 @@ module DeployFacts
     # ==== Examples
     #
     def deployClusters
+
+      $cluster = @parsed_obj['environment_cluster']
+
       # for each layer in --deploy parameter.
       @opt.deploy.each do |d|
         case d
@@ -241,36 +244,36 @@ module DeployFacts
           end
           if !@opt.norun
             # this method uses the mc discovery subsystem.
-            @mchandler.puppetRunBatch @opt.cluster, 'batch', 2
+            @mchandler.puppetRunBatch $cluster, 'batch', 2
           end
           if !@opt.onlyrun
             # this method uses the mc discovery subsystem.
-            @mchandler.handleBatchLayer @opt.cluster, 'bootstrap'
+            @mchandler.handleBatchLayer $cluster, 'bootstrap'
           end
         when 'bus'
           if !@opt.nofacts
-            deployFactsLayer 'bus'
+            deployFactsLayer $cluster, 'bus'
           end
           if !@opt.norun
-            @mchandler.puppetRunBatch 'bus', 2
+            @mchandler.puppetRunBatch $cluster, 'bus', 2
           end
-          @mchandler.handleBusLayer 'bootstrap'
+          @mchandler.handleBusLayer $cluster, 'bootstrap'
         when 'speed'
           if !@opt.nofacts
-            deployFactsLayer 'speed'
+            deployFactsLayer $cluster, 'speed'
           end
           if !@opt.norun
-            @mchandler.puppetRunBatch 'speed', 2
+            @mchandler.puppetRunBatch $cluster, 'speed', 2
           end
-          @mchandler.handleSpeedLayer 'bootstrap'
+          @mchandler.handleSpeedLayer $cluster, 'bootstrap'
         when 'serving'
           if !@opt.nofacts
-            deployFactsLayer 'serving'
+            deployFactsLayer $cluster, 'serving'
           end
           if !@opt.norun
-            @mchandler.puppetRunBatch 'serving', 2
+            @mchandler.puppetRunBatch $cluster, 'serving', 2
           end
-          @mchandler.handleServingLayer 'bootstrap'
+          @mchandler.handleServingLayer $cluster, 'bootstrap'
         end
       end
     end 

@@ -321,7 +321,7 @@ module Marionette
       mc = rpcclient "rpcutil"
       mc.compound_filter "(deploop_role=nn1 or deploop_role=nn2 or deploop_role=rm) and deploop_collection=#{cluster} "
       node_managers = mc.discover
-      
+
       # the workers list
       mc.reset_filter
       mc.compound_filter "deploop_collection=#{cluster} and deploop_role=dn"
@@ -490,7 +490,7 @@ module Marionette
     # ==== Attributes
     #
     def batchLayerStart(cluster)
-      node_managers, node_workers, nn1, nn2, rm = getClusterHosts
+      node_managers, node_workers, nn1, nn2, rm = getClusterHosts cluster
 
       # 1. Start Zookeeper Esemble
       puts "starting up Zookeeper Esemble...."
@@ -536,7 +536,7 @@ module Marionette
     # ==== Attributes
     #
     def batchLayerStop(cluster)
-      node_managers, node_workers, nn1, nn2, rm = getClusterHosts
+      node_managers, node_workers, nn1, nn2, rm = getClusterHosts cluster
 
       # 1. Stop the workers.
       puts "shutting down DataNode workers...."

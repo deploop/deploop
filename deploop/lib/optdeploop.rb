@@ -129,9 +129,8 @@ module OptionsParser
         # deploop --cluster production --layer batch --start
         # deploop --cluster production --layer batch --stop
         #
-        opts.on("--cluster", "cluster name",
-                "The cluster name over works") do |cluster|
-          options.cluster << cluster
+        opts.on("--cluster clustername", "Cluster", "The cluster name over works") do |cluster|
+          options.cluster = cluster
         end
 
         opts.on("--layer batch,speed,bus,serving", Array, "Define cluster for operation") do |layer|
