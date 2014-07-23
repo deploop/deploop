@@ -49,9 +49,8 @@ module Environment
       g.branches.remote
       g.branch(git_buildoop_branch).checkout
 
-      #confirm_action? "the /etc/puppet/environments will be erased,"
-      #FileUtils.rm_rf('/etc/puppet/environments/')
-      #FileUtils.mkdir_p('/etc/puppet/environments/')
+      confirm_action? "the /etc/puppet/environments/#{puppet_environment} will be erased,"
+      FileUtils.rm_rf("/etc/puppet/environments/#{puppet_environment}")
 
       # copy environment to puppet location
       FileUtils.cp_r git_working_dir + "/all", 
@@ -63,7 +62,7 @@ module Environment
     end
 
     def fillExtlookupCSV(json_loaded)
-      @buildoop_yumrepo_uri = 'http://openbus-buildoop.openbus.org:8081/'
+      @buildoop_yumrepo_uri = 'http://openbus-buildoop/buildoop/'
       @hadoop_security_authentication = 'simple'
       @hadoop_ha_nameservice = json_loaded['cluster_layout']['name'] 
       @hadoop_namenode_nn1 = json_loaded['cluster_layout']['batch']['nn1']['hostname']
