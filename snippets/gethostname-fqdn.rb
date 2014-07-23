@@ -21,7 +21,7 @@
 require 'socket'
 
 puts "using hostname"
-ret = Socket.gethostbyname("openbus-nn1")
+ret = Socket.gethostbyname("redoop-dn3")
 
 puts "FQDN:     #{ret[0]}"
 puts "Hostname: #{ret[1]}"

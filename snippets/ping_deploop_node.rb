@@ -24,7 +24,8 @@ require 'socket'
 require "mcollective"
 include MCollective::RPC
 
-$h = 'openbus-nn1.openbus.org'
+#$h = 'openbus-nn1.openbus.org'
+$h = 'redoop-dn3.openbus.org'
 #$h = 'openbus-nn1'
 host = Socket.gethostbyname($h)
 mc = rpcclient "rpcutil"

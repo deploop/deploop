@@ -45,6 +45,7 @@ module Marionette
     # * +host+ - the host to make the ping
     #
     def ifHostUp(host)
+      Net::Ping::TCP.econnrefused = true
       Net::Ping::TCP.new(host).ping?
     end
 
