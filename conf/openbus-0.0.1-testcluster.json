@@ -2,6 +2,7 @@
   "environment_path": "../deploop-environments.git",
   "environment_branch": "buildoop-openbus-0.0.1",
   "environment_cluster": "testcluster",
+  "buildoop_repository": "http://openbus-buildoop/buildoop/",
   "cluster_layout": 
   {
     "name": "redoop",

@@ -62,7 +62,7 @@ module Environment
     end
 
     def fillExtlookupCSV(json_loaded)
-      @buildoop_yumrepo_uri = 'http://openbus-buildoop/buildoop/'
+      @buildoop_yumrepo_uri = json_loaded['buildoop_repository']
       @hadoop_security_authentication = 'simple'
       @hadoop_ha_nameservice = json_loaded['cluster_layout']['name'] 
       @hadoop_namenode_nn1 = json_loaded['cluster_layout']['batch']['nn1']['hostname']
