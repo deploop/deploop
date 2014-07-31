@@ -1,0 +1,6 @@
+Grape: http://intridea.github.io/grape/
+Rails API: https://github.com/rails-api/rails-api
+Poncho: https://github.com/stripe/poncho
+Sinatra: http://www.sinatrarb.com/
+
+
