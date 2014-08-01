@@ -1,0 +1,101 @@
+{
+	"title": "Configuration",
+	"description": "Deploop configuration schema",
+	"type": "object",
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"additionalProperties": false,
+	"required": [ "buildoop_repository", "environment_path", "environment_cluster", "cluster_layout" ],
+	"properties": {
+		"buildoop_repository": {
+			"description": "URL to buildoop packages repository",
+			"type": "string",
+			"format": "uri"
+			},
+		"environment_path": {
+			"description": "Path to puppet environment manifests",
+			"type": "string"
+			},
+		"environment_branch": {
+			"description": "If doesn't find environments path, then it is retrieved from this git branch",
+			"type": "string"
+			},
+		"environment_cluster": {
+			"description": "Specifies which environment to use",
+			"type": "string",
+			"enum" : [ "production", "preproduction", "test" ]
+			},
+		"cluster_layout": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"description": "Logical name of cluster to be used in HA configuration",
+					"type": "string"
+					},
+				"batch": { "$ref": "#/definitions/batch" },
+				"bus": { "$ref": "#/definitions/bus" },
+				"speed": { "$ref": "#/definitions/speed_serving" },
+				"serving": { "$ref": "#/definitions/speed_serving" }
+				},
+			"anyOf" : [ 
+				{ "required" : ["name","batch"] },  
+				{ "required" : ["name","bus"] },  
+				{ "required" : ["name","speed"] },  
+				{ "required" : ["name","serving"] }
+				 ]
+    			}
+  		},
+	"definitions": {
+		"host": {
+		"type": "object",
+		"properties": {
+			"hostname": {
+				"description": "FQDN",
+				"type": "string",
+				"format": "hostname"
+				},
+			"entity": {
+				"description": "Additional roles assigned to host",
+				"type": "array",
+				"items": { "type": "string" }
+				}
+			},
+		"required": [ "hostname" ]
+		},
+	"batch": {
+		"description": "Configuration for batch layer",
+		"type": "object",
+		"properties": {
+			"nn1": { "$ref": "#/definitions/host" },
+			"nn2": { "$ref": "#/definitions/host" },
+			"rm": { "$ref": "#/definitions/host" },
+			"dn": {
+				"type": "array",
+				"items": { "$ref": "#/definitions/host" }
+				}
+			},
+		"required": [ "nn1", "nn2", "rm", "dn" ]
+		},
+	"bus": {
+		"description": "Configuration for bus layer",
+		"type" : "object",
+		"properties" : {
+	        	"worker" : {
+	            		"type": "array",
+	            		"items": { "$ref": "#/definitions/host" }
+				}
+			}	
+	    	},
+	"speed_serving": {
+		"description": "Configuration for speed layer",
+		"type" : "object",
+		"properties" : {
+			"name" : { "type" : "string" },
+			"master" : { "$ref": "#/definitions/host" },
+			"worker" : {
+				"type" : "array",
+				"items" : { "$ref": "#/definitions/host" }
+				}
+			}        
+		}
+	}
+}
