@@ -11,4 +11,4 @@ gem "net-ping"
 
 gem "git", '1.2.7'
 
-
+gem "json-schema", "2.2.4"
