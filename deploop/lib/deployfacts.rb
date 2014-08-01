@@ -36,6 +36,7 @@ require 'pp'
 require_relative '../lib/marionette'
 require_relative '../lib/outputhandler'
 require_relative '../lib/environment'
+require_relative '../lib/checks'
 
 module DeployFacts
   # Multi-sided dice class.  The number of sides is determined
@@ -99,17 +100,6 @@ module DeployFacts
     #  
     # ==== Examples
     #
-    def checkJSON(json)
-      # FIXME: logical check of cluster pending
-      jsonObj = File.read(json)
-      begin
-          @parsed_obj = JSON.parse(jsonObj)
-      rescue JSON::ParserError => e
-        puts "ERROR: JSON file parsing error"
-        exit
-      end
-      @parsed_obj
-    end 
 
     # ==== Summary
     #
@@ -196,7 +186,16 @@ module DeployFacts
     # ==== Examples
     #
     def loadJSON(json)
-      checkJSON(json)
+      json_instance = Checks::CheckJson.new(json)
+      errors = json_instance.check()
+      if errors.size > 0
+        puts errors.to_s
+        if json_instance.fatal()
+          exit
+        end
+      else
+        return json_instance.loadJson()
+      end
     end
 
     def createFactsHash(json, show)
