@@ -199,7 +199,7 @@ module DeployFacts
     end
 
     def createFactsHash(json, show)
-      loadJSON(json)
+      @parsed_obj=loadJSON(json)
       @categories.each do |b|
         create_facts @parsed_obj['environment_cluster'], b, show
       end
