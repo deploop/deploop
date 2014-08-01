@@ -4,3 +4,9 @@ Poncho: https://github.com/stripe/poncho
 Sinatra: http://www.sinatrarb.com/
 
 
+API:
+
+http://savanna.readthedocs.org/en/latest/devref/plugin.spi.html
+http://sequenceiq.com/cloudbreak/
+
+
