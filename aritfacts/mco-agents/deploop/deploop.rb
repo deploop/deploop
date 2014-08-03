@@ -20,6 +20,31 @@ module MCollective
         filename="deploop_#{fact}.rb"
         fileout = "#{facterpath}/#{filename}"
 
+	$setcode = ''
+
+	# If file exits we have to get
+	# the setcode line in order to
+	# build a new line with the new
+	# value append.
+	if File.file? fileout
+            Log.info("deploop facter append: %s" % fileout)
+	    File.foreach(fileout) {|x|
+		if x.include? 'setcode'
+		    a = (x.delete! '\"').lstrip
+		    a.slice! "setcode echo"
+		    $setcode = a.lstrip
+		    break
+		end
+	    }
+	    if $setcode.include? value
+		value = $setcode.chomp!
+	    else
+	    	value = $setcode.chomp! + " " + value
+	    end
+	end
+
+	# Using the setcode line appened with
+	# the new value, rewrite again the fact file.
         File.open(fileout,"w+") {|f|
           f.puts "Facter.add(:deploop_#{fact}) do"
           f.puts "\tsetcode \"echo #{value}\""

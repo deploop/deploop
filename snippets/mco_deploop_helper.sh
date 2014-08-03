@@ -189,5 +189,19 @@ manager> mco rpc deploop create_fact fact='role' value='kdc-server' --with-ident
 manager> mco rpc deploop create_fact fact='entity' value='flume' --with-identity=mncarsnas
 manager> mco inventory mncarsnas  | grep deploop_
 
+# New functions for new feature multiple layer per hosts:
+
+manager> mco inventory openbus-nn1 | grep deploop_
+
+    deploop_category => serving batch bus
+    deploop_collection => production
+    deploop_entity => flume
+    deploop_role => nn1 hbase-master
+
+manager> mco ping --with-fact "deploop_category=/.*serving/"
+manager> mco ping --with-fact "deploop_category=/.*bus/"
+manager> mco ping --with-fact "deploop_category=/.*batch/"
+
+
 
 
