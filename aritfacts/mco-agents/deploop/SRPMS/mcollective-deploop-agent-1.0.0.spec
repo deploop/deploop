@@ -16,7 +16,7 @@ Requires: mcollective-deploop-common >= 1.0.0
 %description
 Deploop Agent server for the The Hadoop Deploy System.
 
-%prep
+%prep 
 %setup
 
 %build
@@ -24,13 +24,15 @@ Deploop Agent server for the The Hadoop Deploy System.
 %install
 rm -rf %{buildroot}
 %{__install} -d -m0755 %{buildroot}/usr/libexec/mcollective/mcollective/agent
+%{__install} -d -m0755 %{buildroot}/var/lib/puppet/facts.d/
 
-%{__install} -m0644 usr/libexec/mcollective/mcollective/agent/deploop.rb %{buildroot}/usr/libexec/mcollective/mcollective/agent/deploop.rb
+%{__install} -m0644 deploop.rb %{buildroot}/usr/libexec/mcollective/mcollective/agent/deploop.rb
+%{__install} -m0644 hadoop_storage_locations.rb %{buildroot}/var/lib/puppet/facts.d/hadoop_storage_locations.rb
 
 %files
 %defattr(-,root,root,-)
 /usr/libexec/mcollective/mcollective/agent/deploop.rb
-
+/var/lib/puppet/facts.d/hadoop_storage_locations.rb
 
 %changelog
 * Thu Feb 21 2013 Javi Roman <javiroman@redoop.org> - 1.0.0-1

@@ -24,7 +24,7 @@ Deploop Agent DDL for the The Hadoop Deploy System.
 rm -rf %{buildroot}
 %{__install} -d -m0755 %{buildroot}/usr/libexec/mcollective/mcollective/agent
 
-%{__install} -m0644 usr/libexec/mcollective/mcollective/agent/deploop.ddl %{buildroot}/usr/libexec/mcollective/mcollective/agent/deploop.ddl
+%{__install} -m0644 deploop.ddl %{buildroot}/usr/libexec/mcollective/mcollective/agent/deploop.ddl
 
 %files
 %defattr(-,root,root,-)
