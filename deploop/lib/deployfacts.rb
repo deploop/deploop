@@ -116,6 +116,9 @@ module DeployFacts
       $roles.each do |r|
         case r
         when 'dn', 'worker'
+          if r == 'worker'
+            r = @parsed_obj['cluster_layout'][category]['name'] + "-" + r
+          end
           @parsed_obj['cluster_layout'][category][r].each do |w|
               $hostname=w['hostname']
               $entities=w['entity']
@@ -146,6 +149,9 @@ module DeployFacts
               end
            end
         else
+            if r == 'master'
+              r = @parsed_obj['cluster_layout'][category]['name'] + "-" + r
+            end
             $hostname=@parsed_obj['cluster_layout'][category][r]["hostname"]
             $entities=@parsed_obj['cluster_layout'][category][r]["entity"]
 

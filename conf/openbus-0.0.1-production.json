@@ -41,7 +41,8 @@
     },
     "bus": 
     {
-      "worker": [
+      "name": "kafka",
+      "kafka-worker": [
           { 
             "hostname":"bus-01",  
             "entity": ["flume"]  
@@ -59,11 +60,11 @@
     "speed": 
     {
       "name": "storm",
-      "master": {
+      "storm-master": {
          "hostname": "speed-01",  
          "entity": ["flume"]  
        },
-      "worker": [
+      "storm-worker": [
           { 
             "hostname":"speed-02",  
             "entity": ["flume"]  
@@ -76,12 +77,12 @@
     },
     "serving": 
     {
-      "name": "cassandra",
-      "master": {
+      "name": "elasticsearch",
+      "elasticsearch-master": {
         "hostname": "serving-01",  
         "entity": ["flume"] 
       },
-      "worker": [
+      "elasticsearch-worker": [
           { 
             "hostname":"serving-02",  
             "entity": ["flume"]  
