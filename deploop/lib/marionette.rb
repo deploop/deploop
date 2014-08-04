@@ -165,11 +165,14 @@ module Marionette
       epoch = Time.now.to_i
 
       mc = rpcclient "puppet"
-      mc.compound_filter "deploop_collection=#{cluster} and deploop_category=#{layer}"
+      mc.compound_filter "deploop_collection=#{cluster} and deploop_category=/.*#{layer}/"
       mc.progress = false
 
       nodes = mc.discover
       nodes = mc.discover.sort
+
+      puts "Deploying Puppet Run for nodes:"
+      puts nodes
 
       result = mc.runonce(:forcerun => true, :batch_size => interval)
       waitPuppetRun = Thread.new{checkForPuppetRun nodes, epoch}
@@ -196,8 +199,7 @@ module Marionette
     def handleBatchLayer(cluster, operation)
         case operation
         when 'bootstrap'
-          #JAVI batchLayerBootStrapping cluster
-          puts 'bootstrap batch layer'
+          batchLayerBootStrapping cluster
         when 'start'
           batchLayerStart cluster
         when 'stop'
@@ -291,27 +293,27 @@ module Marionette
     def getClusterHosts(cluster)
       # discovering the node managers.
       mc = rpcclient "rpcutil"
-      mc.compound_filter "(deploop_role=nn1 or deploop_role=nn2 or deploop_role=rm) and deploop_collection=#{cluster} "
+      mc.compound_filter "(deploop_role=/.*nn1/ or deploop_role=/.*nn2/ or deploop_role=/.*rm/) and deploop_collection=#{cluster} "
       node_managers = mc.discover
 
       # the workers list
       mc.reset_filter
-      mc.compound_filter "deploop_collection=#{cluster} and deploop_role=dn"
+      mc.compound_filter "deploop_collection=#{cluster} and deploop_role=/.*dn/"
       node_workers = mc.discover
 
       # storing nodemanagers one by one
       mc.reset_filter
-      mc.compound_filter "deploop_collection=#{cluster} and deploop_role=nn1"
+      mc.compound_filter "deploop_collection=#{cluster} and deploop_role=/.*nn1/"
       node = mc.discover
       nn1 = node[0]
 
       mc.reset_filter
-      mc.compound_filter "deploop_collection=#{cluster} and deploop_role=nn2"
+      mc.compound_filter "deploop_collection=#{cluster} and deploop_role=/.*nn2/"
       node = mc.discover
       nn2 = node[0]
 
       mc.reset_filter
-      mc.compound_filter "deploop_collection=#{cluster} and deploop_role=rm"
+      mc.compound_filter "deploop_collection=#{cluster} and deploop_role=/.*rm/"
       node = mc.discover
       rm = node[0]
       mc.disconnect
