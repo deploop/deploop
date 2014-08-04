@@ -49,16 +49,17 @@ module Environment
       g.branches.remote
       g.branch(git_buildoop_branch).checkout
 
-      confirm_action? "the /etc/puppet/environments/#{puppet_environment} will be erased,"
-      FileUtils.rm_rf("/etc/puppet/environments/#{puppet_environment}")
+      if confirm_action? "the /etc/puppet/environments/#{puppet_environment} will be erased,"
+        FileUtils.rm_rf("/etc/puppet/environments/#{puppet_environment}")
 
-      # copy environment to puppet location
-      FileUtils.cp_r git_working_dir + "/all", 
-          '/etc/puppet/environments', :verbose => true
-      FileUtils.cp_r git_working_dir + "/cluster-name", 
-          "/etc/puppet/environments/#{puppet_environment}", :verbose => true
+        # copy environment to puppet location
+        FileUtils.cp_r git_working_dir + "/all", 
+            '/etc/puppet/environments', :verbose => true
+        FileUtils.cp_r git_working_dir + "/cluster-name", 
+            "/etc/puppet/environments/#{puppet_environment}", :verbose => true
 
-      fillExtlookupCSV json_loaded
+        fillExtlookupCSV json_loaded
+      end
     end
 
     def fillExtlookupCSV(json_loaded)
@@ -89,9 +90,10 @@ module Environment
           when 'Y', 'y', 'j', 'J', 'yes' 
             cont = false
           when /\A[nN]o?\Z/
-            exit
+            return false
         end
       end
+      true
     end
 
 

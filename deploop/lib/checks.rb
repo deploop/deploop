@@ -63,15 +63,19 @@ module Checks
           errors += [{ "severity" => "FATAL", "message" => "JSON file parsing error"}]
           @fatal_error = true
         end
-        if !@fatal_error 
-          hostnames = get_hostnames_roles(parsed_obj)
-          hostnames.each do |host, roles|
-            if roles.size > 1
-              @errors += [{"severity" => "FATAL", "message" => "Only one rol could be applied by hostname. Host: " + host + ", Roles: " + roles.to_s }]
-              @fatal_error = true
-            end
-          end
-        end
+
+        #if !@fatal_error 
+        #  hostnames = get_hostnames_roles(parsed_obj)
+        #  hostnames.each do |host, roles|
+        #    if roles.size > 1
+        #      @errors += [{"severity" => "FATAL", 
+        #        "message" => "Only one rol could be applied by hostname. Host: " + 
+        #        host + ", Roles: " + roles.to_s }]
+        #      @fatal_error = true
+        #    end
+        #  end
+        #end
+
       end
       if @errors.size == 0
         @json = parsed_obj

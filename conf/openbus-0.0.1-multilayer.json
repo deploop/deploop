@@ -1,0 +1,96 @@
+{
+  "environment_path": "../deploop-environments.git",
+  "environment_branch": "buildoop-openbus-0.0.1",
+  "environment_cluster": "production",
+  "buildoop_repository": "http://openbus-buildoop/buildoop/",
+  "cluster_layout": 
+  {
+    "name": "buildoop",
+    "batch": 
+    {
+      "nn1": {
+        "hostname": "openbus-nn1.openbus.org",
+        "entity": ["flume", "monit"]
+      },
+      "nn2": {
+        "hostname": "openbus-nn2.openbus.org",
+        "entity": ["flume", "monit"]
+      },
+      "rm": {
+        "hostname": "openbus-rm.openbus.org",
+        "entity": ["flume", "monit"]
+      },
+      "dn": [
+          { 
+            "hostname":"openbus-dn1.openbus.org",  
+            "entity": ["flume"]  
+          },
+          { 
+            "hostname":"openbus-dn2.openbus.org",  
+            "entity": ["flume"]  
+          },
+          { 
+            "hostname":"openbus-dn3.openbus.org",  
+            "entity": ["flume"]  
+          },
+	      { 
+            "hostname":"openbus-dn4.openbus.org",  
+            "entity": ["flume"]  
+          }
+      ]
+    },
+    "bus": 
+    {
+      "worker": [
+          { 
+            "hostname":"bus-01",  
+            "entity": ["flume"]  
+          },
+          { 
+            "hostname":"bus-02",  
+            "entity": ["flume"]  
+          },
+          { 
+            "hostname":"bus-03",  
+            "entity": ["flume"]  
+          }
+      ]
+    },
+    "speed": 
+    {
+      "name": "storm",
+      "master": {
+         "hostname": "speed-01",  
+         "entity": ["flume"]  
+       },
+      "worker": [
+          { 
+            "hostname":"speed-02",  
+            "entity": ["flume"]  
+          },
+          { 
+            "hostname":"speed-03",  
+            "entity": ["flume"]  
+          }
+      ]
+    },
+    "serving": 
+    {
+      "name": "cassandra",
+      "master": {
+        "hostname": "openbus-dn1.openbus.org",  
+        "entity": ["flume"] 
+      },
+      "worker": [
+          { 
+            "hostname":"openbus-dn2.openbus.org",  
+            "entity": ["flume"]  
+          },
+          { 
+            "hostname":"openbus-dn3.openbus.org",  
+            "entity": ["flume"]  
+          }
+      ]
+    }
+  }
+}

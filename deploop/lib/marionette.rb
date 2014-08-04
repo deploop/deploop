@@ -196,7 +196,8 @@ module Marionette
     def handleBatchLayer(cluster, operation)
         case operation
         when 'bootstrap'
-          batchLayerBootStrapping cluster
+          #JAVI batchLayerBootStrapping cluster
+          puts 'bootstrap batch layer'
         when 'start'
           batchLayerStart cluster
         when 'stop'
@@ -205,36 +206,6 @@ module Marionette
           puts "ERROR"
         end
     end
-
-#        worker_services = ['hadoop-hdfs-datanode', 'hadoop-yarn-nodemanager']
-#        manager_1st_services = ['hadoop-hdfs-zkfc', 'hadoop-hdfs-jornalnode', 
-#          'zookeeper-server']
-#        nn_services = ['hadoop-hdfs-namenode']
-#        rm_services = ['hadoop-yarn-resourcemanager', 'mapreduce-historyserver']
-
-        # discover worker node collection
-#        mcService = rpcclient "service"
-#        mcService.compound_filter 'deploop_category=batch and deploop_role=dn'
-#        mcService.progress = false
-#        nodes = mcService.discover
-#        nodes = mcService.discover.sort
-
-#        nodes.each do |n| 
-#          mcFact = rpcclient 'rpcutil'
-#          mcFact.identity_filter "#{n}"
-#          mcFact.progress = false
-
-#          worker_services.each do |service|
-#            if operation == 'start'
-#              puts "starting #{service} in #{n}"
-#              res = mcService.start(:service => service)
-#            else
-#              puts "stopping #{service} in #{n}"
-#              res = mcService.stop(:service => service)
-#            end
-#          end
-#          mcFact.disconnect
-#        end
 
     # ==== Summary
     #

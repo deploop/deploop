@@ -70,36 +70,19 @@ module DeployFacts
       @mchandler = Marionette::MCHandler.new 
       @outputHandler = OutputModule::OutputHandler.new opt.output
 
-      # host = {'mncars001' => 
-      #           {deploop_collection:'production', deploop_category:'batch',
-      #            deploop_role:'nn1',deploop_entity:'flume'}, 
-      #         'mncars002' => 
-      #           {deploop_collection:'production', deploop_category:'batch',
-      #            deploop_role:'nn2',deploop_entity:'flume'}, 
-      #         }
+      # @host_facts is a Has with 'key' the name of host and the 'value'
+      # a list of facts. Example:
       #
-      # host['mncars003'] = {:a=>"new", :b=>"value"}
+      # @host_facts = {"host1"=>
+      #                 [{"deploop_collection"=>"production", "deploop_category"=>"batch"}, 
+      #                  {"deploop_collection"=>"production", "deploop_category"=>"serving"}]
+      #                "host2" =>
+      #                 [{"deploop_collection"=>"production", "deploop_category"=>"batch"}]
+      #                }
       #
       # The host list with their facts: gattered from the JSON file.
       @host_facts = Hash.new
     end
-
-    # ==== Summary
-    #
-    # This method is used for check the JSON schema 
-    # integrity, the syntax integrity and the cluster
-    # logical organization. For example, you can not
-    # deploy a Hadoop cluster without a NameNode node
-    # in the JSON schema.
-    #
-    # ==== Attributes
-    #
-    # * +json+ - JSON file describing the cluster schema
-    #
-    # ==== Returns
-    #  
-    # ==== Examples
-    #
 
     # ==== Summary
     #
@@ -137,12 +120,22 @@ module DeployFacts
               $hostname=w['hostname']
               $entities=w['entity']
 
-              @host_facts[$hostname] = 
-                { 'deploop_collection' => collection, 
+              fact_list = []
+
+              fact_list << { 'deploop_collection' => collection, 
                   'deploop_category' => category,
                   'deploop_role' => r,
                   'deploop_entity' => $entities }
 
+              if @host_facts[$hostname].nil?
+                @host_facts[$hostname] = fact_list
+              else
+                @host_facts[$hostname] << { 'deploop_collection' => collection, 
+                  'deploop_category' => category,
+                  'deploop_role' => r,
+                  'deploop_entity' => $entities }
+              end
+                
               if show
                 print "#{$hostname}: deploop_collection=#{collection} "
                 print "deploop_category=#{category} deploop_role=#{r} deploop_entity="
@@ -156,11 +149,21 @@ module DeployFacts
             $hostname=@parsed_obj['cluster_layout'][category][r]["hostname"]
             $entities=@parsed_obj['cluster_layout'][category][r]["entity"]
 
-            @host_facts[$hostname] = 
-                { 'deploop_collection' => collection, 
+            fact_list = []
+
+            fact_list << { 'deploop_collection' => collection, 
                   'deploop_category' => category,
                   'deploop_role' => r,
                   'deploop_entity' => $entities }
+
+            if @host_facts[$hostname].nil?
+                @host_facts[$hostname] = fact_list
+            else
+                @host_facts[$hostname] << { 'deploop_collection' => collection, 
+                  'deploop_category' => category,
+                  'deploop_role' => r,
+                  'deploop_entity' => $entities }
+            end
 
             if show
               print "#{$hostname}: deploop_collection=#{collection} "
@@ -251,7 +254,7 @@ module DeployFacts
           end
         when 'bus'
           if !@opt.nofacts
-            deployFactsLayer $cluster, 'bus'
+            deployFactsLayer 'bus'
           end
           if !@opt.norun
             @mchandler.puppetRunBatch $cluster, 'bus', 2
@@ -259,7 +262,7 @@ module DeployFacts
           @mchandler.handleBusLayer $cluster, 'bootstrap'
         when 'speed'
           if !@opt.nofacts
-            deployFactsLayer $cluster, 'speed'
+            deployFactsLayer 'speed'
           end
           if !@opt.norun
             @mchandler.puppetRunBatch $cluster, 'speed', 2
@@ -267,7 +270,7 @@ module DeployFacts
           @mchandler.handleSpeedLayer $cluster, 'bootstrap'
         when 'serving'
           if !@opt.nofacts
-            deployFactsLayer $cluster, 'serving'
+            deployFactsLayer 'serving'
           end
           if !@opt.norun
             @mchandler.puppetRunBatch $cluster, 'serving', 2
@@ -289,27 +292,31 @@ module DeployFacts
     #
     def checkHosts(layer)
       @host_facts.each do |f|
-        if f[1]['deploop_category'] == layer
-          up = @mchandler.ifHostUp f[0]
-          if @opt.verbose
-            puts "checking host #{f[0]} is up: "  
-            puts up
-          end
-          if !up
-            msg = "ERROR: host \'#{f[0]}\' is unreachable. Aboring."
-            @outputHandler.msgError msg
-          end
-          deplUp = @mchandler.checkIfDeploopHost f[0]
-          if @opt.verbose
-            puts "checking Deploop enabled host #{f[0]}: "  
-            puts deplUp
-          end
-          if !deplUp
-            msg = "ERROR: host \'#{f[0]}\' is not Deploop enabled, fix this. Aborting."
-            @outputHandler.msgError msg
+        # each host has a list of facts
+        f[1].each do |l|
+          if l['deploop_category'] == layer
+            up = @mchandler.ifHostUp f[0]
+            if @opt.verbose
+              puts "checking host #{f[0]} is up: "  
+              puts up
+            end
+            if !up
+              msg = "ERROR: host \'#{f[0]}\' is unreachable. Aboring."
+              @outputHandler.msgError msg
+            end
+            deplUp = @mchandler.checkIfDeploopHost f[0]
+            if @opt.verbose
+              puts "checking Deploop enabled host #{f[0]}: "  
+              puts deplUp
+            end
+            if !deplUp
+              msg = "ERROR: host \'#{f[0]}\' is not Deploop enabled, fix this. Aborting."
+              @outputHandler.msgError msg
+            end
           end
         end
-      end
+
+      end # @host_facts.each
       msg = "The layer \'#{layer}\' has all host Deploop enabled"
       @outputHandler.msgOutput msg
     end
@@ -330,21 +337,26 @@ module DeployFacts
                       'deploop_category',
                       'deploop_role',
                       'deploop_entity']
+
+      puts "checking #{layer} layer host sanity"
       checkHosts layer
       @host_facts.each do |f|
-        if f[1]['deploop_category'] == layer
-          @mchandler.deployEnv f[0], f[1]['deploop_collection']
-          deploop_facts.each do |d|
-            if d == 'deploop_entity'
-              value = f[1][d].join(" ")
-            else
-              value = f[1][d]
+        # each host has a list of facts
+        f[1].each do |l|
+          if l['deploop_category'] == layer
+            @mchandler.deployEnv f[0], l['deploop_collection']
+            deploop_facts.each do |d|
+              if d == 'deploop_entity'
+                value = l[d].join(" ")
+              else
+                value = l[d]
+              end
+              puts f[0] + " " + d.split("_")[1] + " " + value
+              @mchandler.deployFact f[0], d.split("_")[1], value
             end
-            puts f[0] + " " + d.split("_")[1] + " " + value
-            @mchandler.deployFact f[0], d.split("_")[1], value
           end
         end
-      end
+      end # @host_facts.each
     end
 
     def layerRunAction(cluster, layers, action)
