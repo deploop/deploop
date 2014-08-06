@@ -1,0 +1,29 @@
+openbus-0.0.1-cluster01.json
+
+    Cluster with name "cluster01" with:
+
+        1. Batch Layer (Hadoop)
+        2. Bus Layer (Kafka)
+        3. Speed Layer -> Storm
+        4. Serving Layer -> HBase on top of Batch Layer.
+
+openbus-0.0.1-cluster02.json
+
+Cluster with name "cluster02" with:
+
+        1. Batch Layer (Hadoop)
+        2. Bus Layer (Kafka)
+        3. Speed Layer -> Storm
+        4. Serving Layer -> ElasticSearch on top of Batch Layer.
+
+
+openbus-0.0.1-cluster03.json
+
+Cluster with name "cluster02" with:
+
+        1. Batch Layer (Hadoop)
+        2. Bus Layer (Kafka)
+        3. Speed Layer -> Storm
+        4. Serving Layer -> Cassandra with dedicated cluster.
+
+

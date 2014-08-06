@@ -1,7 +1,7 @@
 {
   "environment_path": "../deploop-environments.git",
   "environment_branch": "buildoop-openbus-0.0.1",
-  "environment_cluster": "production",
+  "environment_cluster": "cluster02",
   "buildoop_repository": "http://openbus-buildoop/buildoop/",
   "cluster_layout": 
   {
@@ -77,12 +77,12 @@
     },
     "serving": 
     {
-      "name": "hbase",
-      "hbase-master": {
+      "name": "elasticsearch",
+      "elasticsearch-master": {
         "hostname": "openbus-dn1.openbus.org",  
         "entity": ["flume"] 
       },
-      "hbase-worker": [
+      "elasticsearch-worker": [
           { 
             "hostname":"openbus-dn2.openbus.org",  
             "entity": ["flume"]  
