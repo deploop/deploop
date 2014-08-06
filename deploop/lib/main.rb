@@ -120,14 +120,6 @@ module Main
         end
       end
 
-      #
-      # with --host option you can handle all the 
-      # deploy steps by phase. 
-      #
-      if @opt.host
-        puts "hostname to handle"
-      end
-
       if @opt.topology
         if @opt.cluster.nil?
           puts "ERROR: you have to give a cluster name topology"
@@ -136,10 +128,11 @@ module Main
         @facts.printTopology @opt.cluster
       end
 
-      if (@opt.report and @opt.cluster.nil?)
-        puts "ERROR: you have to give a cluster name for reporting"
-        exit
-      else
+      if @opt.report
+        if @opt.cluster.nil?
+          puts "ERROR: you have to give a cluster name for reporting"
+          exit
+        end
         @facts.printReport @opt.cluster
       end
 

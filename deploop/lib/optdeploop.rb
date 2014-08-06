@@ -145,6 +145,20 @@ module OptionsParser
           options.operation = 'stop'
         end
 
+        # Get information from Hadoop cluster for testing.
+        #
+        # Example:
+        # deploop --cluster production --topology
+        # deploop --cluster production --report
+        #
+        opts.on("--topology", "print batch topology") do |topology|
+          options.topology = topology
+        end
+
+        opts.on("--report", "print batch HDFS reporting") do |report|
+          options.report = report
+        end
+
         # This parameter is for enable Kerberos or
         # disable Kerberos when the cluster is already deployed.
         #
@@ -160,37 +174,12 @@ module OptionsParser
           options.nokerberos = nokerberos
         end
 
-        # Get information from Hadoop cluster for testing.
-        #
-        # Example:
-        # deploop --topology
-        # deploop --report
-        #
-        opts.on("--topology", "print batch topology") do |topology|
-          options.topology = topology
-        end
-
-        opts.on("--report", "print batch HDFS reporting") do |report|
-          options.report = report
-        end
-
+      
         # List of arguments.
         opts.on("-c", "--fact HOSTNAME", Array, "Example 'list' of arguments") do |fact|
           options.fact = fact
         end
 
-        #
-        # Operations around a hostname
-        #
-        opts.on("-h", "--host HOSTNAME", "hostname to handle") do |host|
-          options.host = host
-        end
-
-        opts.on("-s", "--status HOSTNAME", "hostname to handle") do |status|
-          options.status = status
-        end
-
-        #
         # Generic options.
         #
         # Boolean switch.

@@ -210,6 +210,7 @@ module DeployFacts
     def createFactsHash(json, show)
       @parsed_obj=loadJSON(json)
       @categories.each do |b|
+        # fill @host_facts: the fact list per host global variable.
         create_facts @parsed_obj['environment_cluster'], b, show
       end
 
@@ -223,11 +224,13 @@ module DeployFacts
     #
     # This is the real method where de deploy magic
     # is done. In this method a main loop go over the
-    # layers passed by the user and execute the steps:
+    # layers passed by the user and execute the steps by
+    # layer in the --deploy parameter:
     #
-    # 1. deployFactsLayer [batch, speed, serving or bus]
-    # 2. puppetRunBatch [batch, speed, serving or bus]
-    # 3. handleBatchLayer or handleSpeedLayer ...
+    # 1. deployFactsLayer: send the custom facts to hosts.
+    # 2. puppetRunBatch: execute Puppet run per host.
+    # 3. handleBatchLayer or handleSpeedLayer ...: The 
+    #    bootstrap of layer.
     #
     # ==== Attributes
     #
@@ -247,7 +250,7 @@ module DeployFacts
             # This is the only method using the JSON information
             # The reamin methods, puppetRunBatch, handleBatchLayer,
             # are using the mcollective discoverty feature using
-            # the deployed facts.
+            # the deployed facts. Uses the global @host_facts variable.
             deployFactsLayer 'batch'
           end
           if !@opt.norun
@@ -384,10 +387,12 @@ module DeployFacts
     end
 
     def printTopology(cluster)
+      puts "TODO: a better cluster topology here"
       @mchandler.printTopology cluster
     end
 
     def printReport(cluster)
+      puts "TODO: a better cluster reporing here"
       @mchandler.printReport cluster
     end
 
