@@ -419,8 +419,10 @@ module Marionette
       dpExecuteAction nn1, cmd
       cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -chmod -R 1777 /tmp'
       dpExecuteAction nn1, cmd
-      # MapReduce history server
+      # MapReduce history server: MapReduce V2 History Server runs as user "mapred:hadoop"
       cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -mkdir -p /user/history'
+      dpExecuteAction nn1, cmd
+      cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -mkdir /user/history/done'
       dpExecuteAction nn1, cmd
       cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -mkdir /user/history/done_intermediate'
       dpExecuteAction nn1, cmd
