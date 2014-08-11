@@ -414,17 +414,19 @@ module Marionette
       # 9. Minimal HDFS folders layout creation.
       #
       puts "HDFS folder initialization ..."
+      # tmp folder
       cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -mkdir /tmp'
       dpExecuteAction nn1, cmd
       cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -chmod -R 1777 /tmp'
       dpExecuteAction nn1, cmd
+      # MapReduce history server
       cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -mkdir -p /user/history'
       dpExecuteAction nn1, cmd
       cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -mkdir /user/history/done_intermediate'
       dpExecuteAction nn1, cmd
-      cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -chown -R mapred:mapred /user/history'
+      cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -chown -R mapred:hadoop /user/history'
       dpExecuteAction nn1, cmd
-      cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -chmod -R 777 /user/history'
+      cmd = @cmdenv + 'sudo -E -u hdfs hadoop fs -chmod -R 1777 /user/history'
       dpExecuteAction nn1, cmd
 
       #
